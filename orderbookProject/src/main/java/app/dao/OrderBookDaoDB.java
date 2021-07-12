@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 @Repository
@@ -40,9 +40,24 @@ public class OrderBookDaoDB implements OrderBookDao {
   @Override
   public Order addOrder(Order newOrder) {
     final String INSERT_ORDER = "INSERT INTO orders(orderType, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?)";
-    jdbc.update(INSERT_ORDER, newOrder.getOrderType(), newOrder.getStockSymbol(), newOrder.getCumulativeQuantity(), newOrder.getPrice());
-    int newOrderId = jdbc.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
-    newOrder.setOrderId(newOrderId);
+
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
+
+    jdbc.update((Connection conn) -> {
+
+      PreparedStatement statement = conn.prepareStatement(
+              INSERT_ORDER,
+              Statement.RETURN_GENERATED_KEYS);
+
+      statement.setString(1, newOrder.getOrderType());
+      statement.setString(2, newOrder.getStockSymbol());
+      statement.setInt(3, newOrder.getCumulativeQuantity());
+      statement.setBigDecimal(4, newOrder.getPrice());
+      return statement;
+    }, keyHolder);
+
+    newOrder.setOrderId(keyHolder.getKey().intValue());
+
     return newOrder;
   }
 
