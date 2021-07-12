@@ -6,8 +6,11 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="orderbook-rest-client-team-8-marie-cary-iman" />
+        <module name="orderBook" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="orderBook" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
