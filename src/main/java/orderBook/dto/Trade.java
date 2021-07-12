@@ -1,9 +1,7 @@
 package orderBook.dto;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import java.math.BigDecimal;
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class Trade {
     private Integer tradeId;
@@ -12,7 +10,7 @@ public class Trade {
     private Integer sellerId;
     private BigDecimal sellerPrice;
     private Integer quantityFilled;
-    private Date executionTime;
+    private Timestamp executionTime;
 
     public Integer getTradeId() {
         return tradeId;
@@ -62,11 +60,11 @@ public class Trade {
         this.quantityFilled = quantityFilled;
     }
 
-    public Date getExecutionTime() {
+    public Timestamp getExecutionTime() {
         return executionTime;
     }
 
-    public void setExecutionTime(Date executionTime) {
+    public void setExecutionTime(Timestamp executionTime) {
         this.executionTime = executionTime;
     }
 }

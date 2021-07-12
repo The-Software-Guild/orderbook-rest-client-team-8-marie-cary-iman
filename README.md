@@ -11,7 +11,8 @@ things to do:
 - "trades/{orderId}" - GET – Returns each trade of a specific order based on ID.
 
 ### Business Logic
-- create new trade object
+- test suite
+- create new trade object(Logic done meg)
     - A unique Trade ID
     -  Execution time of the trade
      - Quantity filled in the trade 
@@ -21,6 +22,6 @@ things to do:
      - Buy price for the trade
 
 - Order Matching
-    - partial buy/sell
-    - full buy/sell(Completed)
+    - partial buy/sell(Logic done meg)
+    - full buy/sell(Logic done meg)
     - commission
