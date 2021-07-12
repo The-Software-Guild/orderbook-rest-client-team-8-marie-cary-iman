@@ -5,13 +5,32 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05963316-ed49-4f5f-9409-c7ca6264df38" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/orderBook/dto/Order.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/orderBook.iml" beforeDir="false" afterPath="$PROJECT_DIR$/orderBook.iml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/App$ClientMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/App$ClientMapper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/App.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/App.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/controller/OrderBookController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/controller/OrderBookController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/dao/OrderBookAuditDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/dao/OrderBookAuditDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/dao/OrderBookDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/dao/OrderBookDao.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/dto/Client.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/dto/Client.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/dto/OrderTable.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/dto/OrderTable.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/dto/Trade.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/dto/Trade.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/service/OrderBookServiceLayer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/service/OrderBookServiceLayer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/ui/OrderBookView.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/ui/OrderBookView.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/ui/UserIO.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/ui/UserIO.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/orderBook/ui/UserIOConsoleImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/orderBook/ui/UserIOConsoleImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -22,7 +41,15 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="1" />
   </component>
   <component name="ProjectId" id="1v5PdDwyPgYSJQDEktJNMPRM9IT" />
   <component name="ProjectViewState">
@@ -30,10 +57,10 @@
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_MARK_IGNORED_FILES_AS_EXCLUDED" value="true" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="aspect.path.notification.shown" value="true" />
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="project.structure.last.edited" value="Project" />
     <property name="project.structure.proportion" value="0.15" />
@@ -49,13 +76,6 @@
       <recent name="C:\Users\marie\Downloads\JDBCTemplateExampleStarter\OrderBook\src\main" />
       <recent name="C:\Users\marie\Downloads\JDBCTemplateExampleStarter\OrderBook\src\main\java\orderBook\ui" />
     </key>
-  </component>
-  <component name="RunAnythingCache">
-    <option name="myCommands">
-      <command value="mvn compile" />
-      <command value="mvn package" />
-      <command value="mvn site:run" />
-    </option>
   </component>
   <component name="RunManager" selected="Application.App">
     <configuration name="App (1)" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
@@ -73,10 +93,9 @@
     </configuration>
     <configuration name="App" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="16" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
       <option name="MAIN_CLASS_NAME" value="orderBook.App" />
-      <module name="orderBook" />
+      <module name="orderbook-rest-client-team-8-marie-cary-iman" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="orderBook.*" />
@@ -103,17 +122,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="ArquillianJUnit" factoryName="" nameIsGenerated="true">
-      <option name="arquillianRunConfiguration">
-        <value>
-          <option name="containerStateName" value="" />
-        </value>
-      </option>
-      <option name="TEST_OBJECT" value="class" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <list>
       <item itemvalue="Application.orderBook" />
       <item itemvalue="Application.App" />
@@ -135,12 +143,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1625849074232</updated>
-      <workItem from="1626115320997" duration="307000" />
     </task>
     <servers />
-  </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="3" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
