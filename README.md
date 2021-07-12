@@ -16,7 +16,7 @@ things to do:
     - A unique Trade ID
     -  Execution time of the trade
      - Quantity filled in the trade 
-      - Sell client for the trade
+    - Sell client for the trade
      - Sell price for the trade
      - Buy client for the trade
      - Buy price for the trade
