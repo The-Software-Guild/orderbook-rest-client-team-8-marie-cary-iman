@@ -1,6 +1,6 @@
 package app.controller;
 
-import app.dao.OrderBookDao;
+import app.dao.OrderDao;
 import app.dto.Order;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +11,9 @@ import java.util.List;
 @RestController
 @RequestMapping("api/order")
 public class OrderBookController {
-  private final OrderBookDao dao;
+  private final OrderDao dao;
 
-  public OrderBookController(OrderBookDao dao) {
+  public OrderBookController(OrderDao dao) {
     this.dao = dao;
   }
 

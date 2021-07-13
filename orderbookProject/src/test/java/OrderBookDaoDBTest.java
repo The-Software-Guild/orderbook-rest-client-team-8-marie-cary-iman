@@ -1,7 +1,7 @@
 import app.App;
 import app.TestApplicationConfiguration;
-import app.dao.OrderBookDao;
-import app.dao.OrderBookDaoDB;
+import app.dao.OrderDao;
+import app.dao.OrderDaoDB;
 import app.dto.Order;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest(classes = TestApplicationConfiguration.class)
 public class OrderBookDaoDBTest {
   @Autowired
-  OrderBookDao orderDao;
+  OrderDao orderDao;
 
   @Before
   public void setUp() {

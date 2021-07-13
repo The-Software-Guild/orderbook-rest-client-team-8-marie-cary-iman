@@ -12,7 +12,7 @@ import java.sql.*;
 import java.util.List;
 
 @Repository
-public class OrderBookDaoDB implements OrderBookDao {
+public class OrderDaoDB implements OrderDao {
 
   private final JdbcTemplate jdbc;
 
@@ -74,15 +74,32 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
-  public void updateOrder(Order order) {
+  public boolean updateOrder(Order order) {
     final String UPDATE_ORDER = "UPDATE order SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
     jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
+    return false;
   }
 
   @Override
-  public void cancelOrder(int orderId) {
+  public boolean deleteOrderById(int orderId) {
+    return false;
+  }
+
+  @Override
+  public boolean cancelOrder(int orderId) {
     final String CANCEL_ORDER = "UPDATE order SET orderStatus = canceled WHERE orderId = orderId";
     jdbc.update(CANCEL_ORDER);
+    return false;
+  }
+
+  @Override
+  public List<Order> getOrdersByClientId(int clientId) {
+    return null;
+  }
+
+  @Override
+  public List<Order> getCurrentOrders() {
+    return null;
   }
 
   private static final class OrderMapper implements RowMapper<Order> {
