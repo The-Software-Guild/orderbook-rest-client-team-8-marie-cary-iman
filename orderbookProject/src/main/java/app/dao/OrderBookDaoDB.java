@@ -28,6 +28,18 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
+  public List<Order> getSellOrders() {
+    final String SELECT_SELL_ORDERS = "SELECT * FROM order WHERE orderType = ask, orderStatus != completed ORDER BY price ASC";
+    return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
+  }
+
+  @Override
+  public List<Order> getBuyOrders() {
+    final String SELECT_BUY_ORDERS = "SELECT * FROM order WHERE orderType = bid, orderStatus != completed ORDER BY price DESC";
+    return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
+  }
+
+  @Override
   public Order getOrder(int orderId) {
     try{
       final String SELECT_ORDER_BY_ID = "SELECT * FROM order WHERE orderId = ?";

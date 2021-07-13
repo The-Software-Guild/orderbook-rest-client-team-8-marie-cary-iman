@@ -1,46 +1,19 @@
 package app.serviceLayer;
 
 
-import app.dao.OrderBookDao;
+
 import app.dto.Order;
 import app.dto.Trade;
+import app.dao.OrderBookDaoDB;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
-
-    ArrayList<Order> sellOrders = new ArrayList<>();
-    ArrayList<Order> buyOrders = new ArrayList<>();
-    @Override
-    public void setSellList(ArrayList<Order> orders) {
-        System.out.println("Set All Selling Active Order");
-
-
-        sellOrders = orders;
-
-    }
-
-    @Override
-    public void setBuyList(ArrayList<Order> orders) {
-        System.out.println("Set All Buying Active Order");
-
-
-        buyOrders = orders;
-
-    }
-    @Override
-    public ArrayList<Order> getSellList() {
-        System.out.println("Get All Selling Active Order");
-
-        return sellOrders;
-    }
-
-    @Override
-    public ArrayList<Order> getBuyList() {
-        System.out.println("Get All Buying Active Order");
-        return buyOrders;
-    }
+    private JdbcTemplate jdbc = new JdbcTemplate();
+    OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
 
 
 
@@ -50,7 +23,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         //need more logic to sell to the most profitable couple
         System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("ask")) {
-            ArrayList<Order> buyOrders = getBuyList();
+            List<Order> buyOrders = daoDB.getBuyOrders();
             for (int i = 0; i < buyOrders.size(); i++) {
                 if(buyOrders.get(i).getPrice().compareTo(order.getPrice()) == -1 ){
                     System.out.println("Select this order to sell");
@@ -58,7 +31,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
                 }
             }
         } else {
-            ArrayList<Order> sellOrders = getSellList();
+            List<Order> sellOrders = daoDB.getSellOrders();
             for (int i = 0; i < sellOrders.size(); i++) {
                 if(sellOrders.get(i).getPrice().compareTo(order.getPrice()) == 1){
                     System.out.println("Select this order to sell");
@@ -95,9 +68,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             sellOrder.setOrderStatus("completed");
             sellOrder.setCumulativeQuantity(0);
         }
-        //reset cache
-        sellOrders = new ArrayList<>();
-        buyOrders = new ArrayList<>();
+
     }
 
     @Override
