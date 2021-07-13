@@ -40,10 +40,12 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getOrdersByClientId(int clientId) {
+    System.out.println(clientId);
     try {
-      final String SELECT_ORDER_BY_CLIENTID = "SELECT * FROM ordertable WHERE clientId = ? ";
+      final String SELECT_ORDER_BY_CLIENTID = String.format("SELECT * FROM ordertable WHERE clientId = %s ORDER BY orderTime", clientId);
       return jdbc.query(SELECT_ORDER_BY_CLIENTID, new OrderMapper());
     } catch (DataAccessException e) {
+      e.printStackTrace();
       return null;
     }
   }
@@ -111,6 +113,7 @@ public class OrderBookDaoDB implements OrderBookDao {
       order.setOrderStatus(rs.getString("orderStatus"));
       order.setCumulativeQuantity(rs.getInt("cumulativeQuantity"));
       order.setPrice(rs.getBigDecimal("price"));
+      order.setTimestamp(rs.getTimestamp("orderTime"));
       return order;
     }
   }

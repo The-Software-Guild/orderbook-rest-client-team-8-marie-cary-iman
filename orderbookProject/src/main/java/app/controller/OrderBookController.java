@@ -87,8 +87,8 @@ public class OrderBookController {
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
-  public List<Order> getByClientId(@PathVariable int id){
-    List<Order> orders = dao.getOrdersByClientId(id);
+  public List<Order> getByClientId(@PathVariable int clientId){
+    List<Order> orders = dao.getOrdersByClientId(clientId);
     return orders;
   }
 
