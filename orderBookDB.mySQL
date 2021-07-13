@@ -1,14 +1,15 @@
 DROP DATABASE IF EXISTS orderBook;
-CREATE DATABASE orderBook;
+DROP DATABASE IF EXISTS orderTable;
+CREATE DATABASE orderTable;
 
-USE orderBook;
+USE orderTable;
 
 CREATE TABLE client(
   clientId INT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(40)
 );
 
-CREATE TABLE order(
+CREATE TABLE orderTable(
   orderId INT PRIMARY KEY AUTO_INCREMENT,
   clientId INT,
   stockSymbol VARCHAR(10),
@@ -16,6 +17,7 @@ CREATE TABLE order(
   orderStatus VARCHAR(40),
   cumulativeQuantity INT,
   price DECIMAL(20,10),
+  orderTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_client_id FOREIGN KEY (clientId) REFERENCES `client`(clientId)
 );
 
@@ -31,29 +33,34 @@ CREATE TABLE trade(
   CONSTRAINT fk_seller_id FOREIGN KEY (sellerId) REFERENCES `client`(clientId)
 );
 
--- change data type of price
-ALTER TABLE ordertable MODIFY COLUMN price DECIMAL(20,10);
+-- create some clients
+INSERT INTO client(name) VALUES
+("Cary"),
+("Marie"),
+("Iman"),
+("Joey"),
+("Bob");
 
--- resets ordertable and puts in 10 orders (5 buy, 5 sell) for "MSFT"
+-- empties ordertable and puts in 10 orders (5 buy, 5 sell) for "MSFT"
 
 DELETE FROM ordertable WHERE orderId between 0 and 100;
 ALTER TABLE ordertable AUTO_INCREMENT = 1;
 
-INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price)
+INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price, orderTime)
 VALUES
-(00003, "MSFT", "buy", "new", 30, 279.70),
-(00003, "MSFT", "buy", "new", 40, 278.99),
-(00003, "MSFT", "buy", "new", 45, 278.95),
-(00003, "MSFT", "buy", "new", 30, 278.00),
-(00003, "MSFT", "buy", "new", 49, 277.50);
+(00003, "MSFT", "buy", "new", 30, 279.70, "2021-07-13 10:00:00"),
+(00003, "MSFT", "buy", "new", 40, 278.99, "2021-07-13 11:00:00"),
+(00003, "MSFT", "buy", "new", 45, 278.95, "2021-07-13 11:05:14"),
+(00003, "MSFT", "buy", "new", 30, 278.00, "2021-07-13 11:10:10"),
+(00003, "MSFT", "buy", "new", 49, 277.50, "2021-07-13 11:13:10");
 
-INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price)
+INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price, orderTime)
 VALUES
-(00003, "MSFT", "sell", "new", 40, 279.99),
-(00003, "MSFT", "sell", "new", 20, 280.10),
-(00003, "MSFT", "sell", "new", 30, 280.50),
-(00003, "MSFT", "sell", "new", 45, 281.50),
-(00003, "MSFT", "sell", "new", 40, 281.99);
+(00003, "MSFT", "sell", "new", 40, 279.99, "2021-07-13 12:00:00"),
+(00003, "MSFT", "sell", "new", 20, 280.10, "2021-07-13 12:05:13"),
+(00003, "MSFT", "sell", "new", 30, 280.50, "2021-07-13 11:01:49"),
+(00003, "MSFT", "sell", "new", 45, 281.50, "2021-07-13 11:11:11"),
+(00003, "MSFT", "sell", "new", 40, 281.99, "2021-07-13 12:30:00");
 
 SELECT * FROM ordertable;
 
