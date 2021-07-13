@@ -12,6 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
+import java.security.Timestamp;
 import java.util.List;
 
 import static org.junit.Assert.*;
