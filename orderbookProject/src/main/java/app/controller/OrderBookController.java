@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/order")
+@RequestMapping("api")
 public class OrderBookController {
   private final OrderBookDao dao;
 
@@ -18,10 +18,12 @@ public class OrderBookController {
   }
 
   /**
+   * Mapped to GET requests at /api/current.
    * Fetches all active orders, ignores cancelled and completed orders.
    *
    * @return active orders.
    */
+  @RequestMapping("current")
   @GetMapping
   public List<Order> all() {
     return dao.getAllOrders();
