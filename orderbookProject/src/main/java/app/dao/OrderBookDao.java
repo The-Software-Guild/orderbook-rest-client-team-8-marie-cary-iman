@@ -14,4 +14,6 @@ public interface OrderBookDao {
   void updateOrder(Order order);
 
   void cancelOrder(int orderId);
+
+  boolean deleteOrderById(int orderId);
 }
