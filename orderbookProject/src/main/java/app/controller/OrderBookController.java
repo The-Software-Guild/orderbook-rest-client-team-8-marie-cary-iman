@@ -26,7 +26,7 @@ public class OrderBookController {
    *
    * @return active orders.
    */
-  @RequestMapping("current")
+  @RequestMapping("/all")
   @GetMapping
   public List<Order> all() {
     return dao.getCurrentOrders();
