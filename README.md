@@ -24,4 +24,4 @@ things to do:
 - Order Matching
     - partial buy/sell(Logic done meg)
     - full buy/sell(Logic done meg)
-    - commission
+    - commission(list are order so commision is maximise)

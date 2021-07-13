@@ -2,9 +2,10 @@ package app.serviceLayer;
 
 
 
+import app.dao.OrderDaoDB;
 import app.dto.Order;
 import app.dto.Trade;
-import app.dao.OrderBookDaoDB;
+
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
@@ -13,14 +14,14 @@ import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc = new JdbcTemplate();
-    OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
+    OrderDaoDB daoDB = new OrderDaoDB(jdbc);
 
 
 
     @Override
     public Order checkValidOrder(Order order) {
 
-        //need more logic to sell to the most profitable couple
+
         System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("ask")) {
             List<Order> buyOrders = daoDB.getBuyOrders();
