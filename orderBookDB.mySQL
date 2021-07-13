@@ -1,8 +1,8 @@
 DROP DATABASE IF EXISTS orderBook;
 DROP DATABASE IF EXISTS orderTable;
-CREATE DATABASE orderTable;
+CREATE DATABASE orderBook;
 
-USE orderTable;
+USE orderBook;
 
 CREATE TABLE client(
   clientId INT PRIMARY KEY AUTO_INCREMENT,
