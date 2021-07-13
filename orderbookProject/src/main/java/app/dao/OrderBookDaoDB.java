@@ -23,14 +23,14 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getAllOrders() {
-    final String SELECT_ALL_ORDERS = "SELECT * FROM ordertable";
+    final String SELECT_ALL_ORDERS = "SELECT * FROM order";
     return jdbc.query(SELECT_ALL_ORDERS, new OrderMapper());
   }
 
   @Override
   public Order getOrder(int orderId) {
     try{
-      final String SELECT_ORDER_BY_ID = "SELECT * FROM ordertable WHERE orderId = ?";
+      final String SELECT_ORDER_BY_ID = "SELECT * FROM order WHERE orderId = ?";
       return jdbc.queryForObject(SELECT_ORDER_BY_ID, new OrderMapper(), orderId);
     } catch (DataAccessException ex) {
       return null;
@@ -63,13 +63,13 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public void updateOrder(Order order) {
-    final String UPDATE_ORDER = "UPDATE ordertable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
+    final String UPDATE_ORDER = "UPDATE order SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
     jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
   }
 
   @Override
   public void cancelOrder(int orderId) {
-    final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = canceled WHERE orderId = orderId";
+    final String CANCEL_ORDER = "UPDATE order SET orderStatus = canceled WHERE orderId = orderId";
     jdbc.update(CANCEL_ORDER);
   }
 
