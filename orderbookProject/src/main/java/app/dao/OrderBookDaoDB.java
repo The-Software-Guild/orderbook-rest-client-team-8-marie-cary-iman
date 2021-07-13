@@ -1,6 +1,7 @@
 package app.dao;
 
 import app.dto.Order;
+import app.dto.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -39,10 +40,19 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
+  public List<Order> getOrdersByClientId(int clientId) {
+    try {
+      final String SELECT_ORDER_BY_CLIENTID = "SELECT * FROM ordertable WHERE clientId = ? ";
+      return jdbc.query(SELECT_ORDER_BY_CLIENTID, new OrderMapper());
+    } catch (DataAccessException e) {
+      return null;
+    }
+  }
+
+  @Override
   @Transactional
   public Order addOrder(Order newOrder) {
-
-    final String INSERT_ORDER = "INSERT INTO orderTable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
+    final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -51,6 +61,7 @@ public class OrderBookDaoDB implements OrderBookDao {
       PreparedStatement statement = conn.prepareStatement(
               INSERT_ORDER,
               Statement.RETURN_GENERATED_KEYS);
+
       statement.setInt(1, newOrder.getClientId());
       statement.setString(2, newOrder.getOrderType());
       statement.setString(3, newOrder.getOrderStatus());
@@ -67,21 +78,27 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
-  public void updateOrder(Order order) {
-    final String UPDATE_ORDER = "UPDATE orderTable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
-    jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
-  }
-
-  @Override
-  public void cancelOrder(int orderId) {
-    final String CANCEL_ORDER = "UPDATE orderTable SET orderStatus = canceled WHERE orderId = orderId";
-    jdbc.update(CANCEL_ORDER);
+  public boolean updateOrder(Order order) {
+    final String UPDATE_ORDER = "UPDATE ordertable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
+    return jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId()) > 0;
   }
 
   @Override
   public boolean deleteOrderById(int orderId) {
     final String DELETE_ORDER = "DELETE FROM orderTable WHERE orderId = ?";
     return jdbc.update(DELETE_ORDER, orderId) > 0;
+  }
+
+  //TODO: add checks that orderId exists and that status is not completed/canceled
+  public boolean cancelOrder(int orderId) {
+    final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = 'canceled' WHERE orderId = ?";
+    return jdbc.update(CANCEL_ORDER, orderId) > 0;
+  }
+
+  @Override
+  public List<Order> getCurrentOrders(){
+    final String SELECT_CURRENT_ORDERS = "SELECT * FROM ordertable WHERE orderStatus != 'canceled' AND orderStatus != 'completed'";
+    return jdbc.query(SELECT_CURRENT_ORDERS, new OrderMapper());
   }
 
   private static final class OrderMapper implements RowMapper<Order> {
@@ -98,4 +115,5 @@ public class OrderBookDaoDB implements OrderBookDao {
       return order;
     }
   }
+
 }
