@@ -24,14 +24,14 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getAllOrders() {
-    final String SELECT_ALL_ORDERS = "SELECT * FROM orderTable";
+    final String SELECT_ALL_ORDERS = "SELECT * FROM ordertable";
     return jdbc.query(SELECT_ALL_ORDERS, new OrderMapper());
   }
 
   @Override
   public Order getOrder(int orderId) {
     try{
-      final String SELECT_ORDER_BY_ID = "SELECT * FROM orderTable WHERE orderId = ?";
+      final String SELECT_ORDER_BY_ID = "SELECT * FROM ordertable WHERE orderId = ?";
       return jdbc.queryForObject(SELECT_ORDER_BY_ID, new OrderMapper(), orderId);
     } catch (DataAccessException ex) {
       return null;
@@ -84,7 +84,7 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public boolean deleteOrderById(int orderId) {
-    final String DELETE_ORDER = "DELETE FROM orderTable WHERE orderId = ?";
+    final String DELETE_ORDER = "DELETE FROM ordertable WHERE orderId = ?";
     return jdbc.update(DELETE_ORDER, orderId) > 0;
   }
 
