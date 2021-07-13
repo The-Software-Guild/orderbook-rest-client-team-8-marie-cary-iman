@@ -17,6 +17,11 @@ public class OrderBookController {
     this.dao = dao;
   }
 
+  /**
+   * Fetches all active orders, ignores cancelled and completed orders.
+   *
+   * @return active orders.
+   */
   @GetMapping
   public List<Order> all() {
     return dao.getAllOrders();
