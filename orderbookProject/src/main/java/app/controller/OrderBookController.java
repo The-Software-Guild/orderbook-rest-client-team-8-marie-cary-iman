@@ -14,19 +14,23 @@ import java.util.List;
 @RequestMapping("orderbook")
 public class OrderBookController {
 
-
   private final OrderBookDao dao;
 
   public OrderBookController(OrderBookDao dao) {
     this.dao = dao;
   }
 
-  @GetMapping("/all")
+  /**
+   * Mapped to GET requests at /api/current.
+   * Fetches all active orders, ignores cancelled and completed orders.
+   *
+   * @return active orders.
+   */
+  @RequestMapping("/all")
+  @GetMapping
   public List<Order> all() {
-    return dao.getAllOrders();
+    return dao.getCurrentOrders();
   }
-
-
 
   @PostMapping("/create")
   @ResponseStatus(HttpStatus.CREATED)
@@ -74,8 +78,6 @@ public class OrderBookController {
     return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
 
-
-
   @GetMapping("/current")
   /* return list of all active orders (NOT completed or canceled). This should include all info of each order
    */
@@ -89,7 +91,6 @@ public class OrderBookController {
     List<Order> orders = dao.getOrdersByClientId(id);
     return orders;
   }
-
 
 /*
   @GetMapping("trades/{orderId}")

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.List;
@@ -24,14 +25,14 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getAllOrders() {
-    final String SELECT_ALL_ORDERS = "SELECT * FROM order";
+    final String SELECT_ALL_ORDERS = "SELECT * FROM orderTable";
     return jdbc.query(SELECT_ALL_ORDERS, new OrderMapper());
   }
 
   @Override
   public Order getOrder(int orderId) {
     try{
-      final String SELECT_ORDER_BY_ID = "SELECT * FROM order WHERE orderId = ?";
+      final String SELECT_ORDER_BY_ID = "SELECT * FROM orderTable WHERE orderId = ?";
       return jdbc.queryForObject(SELECT_ORDER_BY_ID, new OrderMapper(), orderId);
     } catch (DataAccessException ex) {
       return null;
@@ -49,6 +50,7 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
+  @Transactional
   public Order addOrder(Order newOrder) {
     final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
@@ -59,13 +61,15 @@ public class OrderBookDaoDB implements OrderBookDao {
       PreparedStatement statement = conn.prepareStatement(
               INSERT_ORDER,
               Statement.RETURN_GENERATED_KEYS);
-      statement.setInt(1,newOrder.getClientId());
+
+      statement.setInt(1, newOrder.getClientId());
       statement.setString(2, newOrder.getOrderType());
       statement.setString(3, newOrder.getOrderStatus());
       statement.setString(4, newOrder.getStockSymbol());
       statement.setInt(5, newOrder.getCumulativeQuantity());
       statement.setBigDecimal(6, newOrder.getPrice());
       return statement;
+
     }, keyHolder);
 
     newOrder.setOrderId(keyHolder.getKey().intValue());
@@ -76,16 +80,19 @@ public class OrderBookDaoDB implements OrderBookDao {
   @Override
   public boolean updateOrder(Order order) {
     final String UPDATE_ORDER = "UPDATE ordertable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
-    jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
-    return true;
+    return jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId()) > 0;
   }
 
   @Override
+  public boolean deleteOrderById(int orderId) {
+    final String DELETE_ORDER = "DELETE FROM orderTable WHERE orderId = ?";
+    return jdbc.update(DELETE_ORDER, orderId) > 0;
+  }
+
   //TODO: add checks that orderId exists and that status is not completed/canceled
   public boolean cancelOrder(int orderId) {
     final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = 'canceled' WHERE orderId = ?";
-    jdbc.update(CANCEL_ORDER, orderId);
-    return true;
+    return jdbc.update(CANCEL_ORDER, orderId) > 0;
   }
 
   @Override
@@ -93,7 +100,6 @@ public class OrderBookDaoDB implements OrderBookDao {
     final String SELECT_CURRENT_ORDERS = "SELECT * FROM ordertable WHERE orderStatus != 'canceled' AND orderStatus != 'completed'";
     return jdbc.query(SELECT_CURRENT_ORDERS, new OrderMapper());
   }
-
 
   private static final class OrderMapper implements RowMapper<Order> {
     @Override
@@ -109,7 +115,5 @@ public class OrderBookDaoDB implements OrderBookDao {
       return order;
     }
   }
-
-
 
 }
