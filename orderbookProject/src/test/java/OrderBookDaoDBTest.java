@@ -1,8 +1,7 @@
-import app.App;
 import app.TestApplicationConfiguration;
 import app.dao.OrderBookDao;
-import app.dao.OrderBookDaoDB;
 import app.dto.Order;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.validation.constraints.AssertTrue;
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.List;
 
 import static org.junit.Assert.*;
