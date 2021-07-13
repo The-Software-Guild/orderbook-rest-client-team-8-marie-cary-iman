@@ -15,7 +15,7 @@ CREATE TABLE orderTable(
   orderType VARCHAR(10),
   orderStatus VARCHAR(40),
   cumulativeQuantity INT,
-  price DECIMAL,
+  price DECIMAL(20,10),
   CONSTRAINT fk_client_id FOREIGN KEY (clientId) REFERENCES `client`(clientId)
 );
 
@@ -30,3 +30,30 @@ CREATE TABLE trade(
   CONSTRAINT fk_buyer_id FOREIGN KEY (buyerId) REFERENCES `client`(clientId),
   CONSTRAINT fk_seller_id FOREIGN KEY (sellerId) REFERENCES `client`(clientId)
 );
+
+-- change data type of price
+ALTER TABLE ordertable MODIFY COLUMN price DECIMAL(20,10);
+
+-- resets ordertable and puts in 10 orders (5 buy, 5 sell) for "MSFT"
+
+DELETE FROM ordertable WHERE orderId between 0 and 100;
+ALTER TABLE ordertable AUTO_INCREMENT = 1;
+
+INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price)
+VALUES
+(00003, "MSFT", "buy", "new", 30, 279.70),
+(00003, "MSFT", "buy", "new", 40, 278.99),
+(00003, "MSFT", "buy", "new", 45, 278.95),
+(00003, "MSFT", "buy", "new", 30, 278.00),
+(00003, "MSFT", "buy", "new", 49, 277.50);
+
+INSERT INTO ordertable(clientId, stockSymbol, orderType, orderStatus, cumulativeQuantity, price)
+VALUES
+(00003, "MSFT", "sell", "new", 40, 279.99),
+(00003, "MSFT", "sell", "new", 20, 280.10),
+(00003, "MSFT", "sell", "new", 30, 280.50),
+(00003, "MSFT", "sell", "new", 45, 281.50),
+(00003, "MSFT", "sell", "new", 40, 281.99);
+
+SELECT * FROM ordertable;
+
