@@ -8,7 +8,7 @@ CREATE TABLE client(
   name VARCHAR(40)
 );
 
-CREATE TABLE order(
+CREATE TABLE orderTable(
   orderId INT PRIMARY KEY AUTO_INCREMENT,
   clientId INT,
   stockSymbol VARCHAR(10),

@@ -29,20 +29,20 @@ public class OrderDaoDB implements OrderDao {
 
   @Override
   public List<Order> getSellOrders() {
-    final String SELECT_SELL_ORDERS = "SELECT * FROM order WHERE orderType = ask, orderStatus != completed ORDER BY price ASC";
+    final String SELECT_SELL_ORDERS = "SELECT * FROM orderTable WHERE orderType = Sell, orderStatus != completed ORDER BY price ASC";
     return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
   }
 
   @Override
   public List<Order> getBuyOrders() {
-    final String SELECT_BUY_ORDERS = "SELECT * FROM order WHERE orderType = bid, orderStatus != completed ORDER BY price DESC";
+    final String SELECT_BUY_ORDERS = "SELECT * FROM orderTable WHERE orderType = Buy, orderStatus != completed ORDER BY price DESC";
     return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
   }
 
   @Override
   public Order getOrder(int orderId) {
     try{
-      final String SELECT_ORDER_BY_ID = "SELECT * FROM order WHERE orderId = ?";
+      final String SELECT_ORDER_BY_ID = "SELECT * FROM orderTable WHERE orderId = ?";
       return jdbc.queryForObject(SELECT_ORDER_BY_ID, new OrderMapper(), orderId);
     } catch (DataAccessException ex) {
       return null;
@@ -51,7 +51,7 @@ public class OrderDaoDB implements OrderDao {
 
   @Override
   public Order addOrder(Order newOrder) {
-    final String INSERT_ORDER = "INSERT INTO orders(orderType, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?)";
+    final String INSERT_ORDER = "INSERT INTO orderTable(orderType, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -75,13 +75,13 @@ public class OrderDaoDB implements OrderDao {
 
   @Override
   public void updateOrder(Order order) {
-    final String UPDATE_ORDER = "UPDATE order SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
+    final String UPDATE_ORDER = "UPDATE orderTable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
     jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
   }
 
   @Override
   public void cancelOrder(int orderId) {
-    final String CANCEL_ORDER = "UPDATE order SET orderStatus = canceled WHERE orderId = orderId";
+    final String CANCEL_ORDER = "UPDATE orderTable SET orderStatus = canceled WHERE orderId = orderId";
     jdbc.update(CANCEL_ORDER);
   }
 
