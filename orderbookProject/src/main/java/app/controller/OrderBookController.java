@@ -26,34 +26,36 @@ public class OrderBookController {
     return dao.getAllOrders();
   }
 
+
+
   @PostMapping("/create")
   @ResponseStatus(HttpStatus.CREATED)
   /* Create order with status "Begin". Return 201 CREATED as well as OrderId */
   public String create(@RequestBody Order order){
     order.setOrderStatus("begin");
     dao.addOrder(order);
+    System.out.println(order.getOrderStatus());
     return String.format("201 CREATED. OrderId: %d",order.getOrderId());
   }
 
-  @PostMapping("/order")
+  @PutMapping("/order/{orderId}")
   /* Updates order by passing in OrderId, ClientId, Stock symbol, side, order quantity, and price as JSON,
   verify IDs are valid and order is able to be updated (Begin, New, or Partial), then update order. Returns the OrderId and order status on success
   and order id with error message on failure.
    */
-  public String update(Order order){
+  // TODO: Custom message
+  public ResponseEntity update(@PathVariable int orderId, @RequestBody Order order){
     System.out.println(order.getOrderId());
     System.out.println(order.getCumulativeQuantity());
     System.out.println(order.getPrice());
-    String status;
-    String message;
-    if(dao.updateOrder(order)) {
-      status = "201";
-      message = "UPDATED";
-    } else {
-      status = "404";
-      message = "ERROR";
+    ResponseEntity response = new ResponseEntity(HttpStatus.NOT_FOUND);
+    if(orderId != order.getOrderId()) {
+      response = new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+    } else if(dao.updateOrder(order)) {
+
+      response = new ResponseEntity(HttpStatus.NO_CONTENT);
     }
-    return String.format("%s %s. OrderId: %d",status, message, order.getOrderId());
+    return response;
   }
 
   @PostMapping("/cancel")

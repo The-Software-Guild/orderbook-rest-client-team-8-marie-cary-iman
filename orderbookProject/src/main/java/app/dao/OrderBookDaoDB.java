@@ -50,10 +50,25 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public Order addOrder(Order newOrder) {
-    final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?)";
+    final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
+    GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
-    jdbc.update(INSERT_ORDER, newOrder.getClientId(),newOrder.getOrderType(), newOrder.getOrderStatus(), newOrder.getStockSymbol(), newOrder.getCumulativeQuantity(), newOrder.getPrice());
+    jdbc.update((Connection conn) -> {
+
+      PreparedStatement statement = conn.prepareStatement(
+              INSERT_ORDER,
+              Statement.RETURN_GENERATED_KEYS);
+      statement.setInt(1,newOrder.getClientId());
+      statement.setString(2, newOrder.getOrderType());
+      statement.setString(3, newOrder.getOrderStatus());
+      statement.setString(4, newOrder.getStockSymbol());
+      statement.setInt(5, newOrder.getCumulativeQuantity());
+      statement.setBigDecimal(6, newOrder.getPrice());
+      return statement;
+    }, keyHolder);
+
+    newOrder.setOrderId(keyHolder.getKey().intValue());
 
     return newOrder;
   }
