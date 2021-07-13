@@ -1,12 +1,14 @@
 package app.dao;
 
 import app.dto.Order;
+import app.dto.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.List;
@@ -23,26 +25,14 @@ public class OrderDaoDB implements OrderDao {
 
   @Override
   public List<Order> getAllOrders() {
-    final String SELECT_ALL_ORDERS = "SELECT * FROM order";
+    final String SELECT_ALL_ORDERS = "SELECT * FROM ordertable";
     return jdbc.query(SELECT_ALL_ORDERS, new OrderMapper());
-  }
-
-  @Override
-  public List<Order> getSellOrders() {
-    final String SELECT_SELL_ORDERS = "SELECT * FROM orderTable WHERE orderType = Sell, orderStatus != completed ORDER BY price ASC";
-    return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
-  }
-
-  @Override
-  public List<Order> getBuyOrders() {
-    final String SELECT_BUY_ORDERS = "SELECT * FROM orderTable WHERE orderType = Buy, orderStatus != completed ORDER BY price DESC";
-    return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
   }
 
   @Override
   public Order getOrder(int orderId) {
     try{
-      final String SELECT_ORDER_BY_ID = "SELECT * FROM order WHERE orderId = ?";
+      final String SELECT_ORDER_BY_ID = "SELECT * FROM ordertable WHERE orderId = ?";
       return jdbc.queryForObject(SELECT_ORDER_BY_ID, new OrderMapper(), orderId);
     } catch (DataAccessException ex) {
       return null;
@@ -50,8 +40,21 @@ public class OrderDaoDB implements OrderDao {
   }
 
   @Override
+  public List<Order> getOrdersByClientId(int clientId) {
+    System.out.println(clientId);
+    try {
+      final String SELECT_ORDER_BY_CLIENTID = String.format("SELECT * FROM ordertable WHERE clientId = %s ORDER BY orderTime", clientId);
+      return jdbc.query(SELECT_ORDER_BY_CLIENTID, new OrderMapper());
+    } catch (DataAccessException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  @Override
+  @Transactional
   public Order addOrder(Order newOrder) {
-    final String INSERT_ORDER = "INSERT INTO orders(orderType, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?)";
+    final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
 
@@ -66,6 +69,7 @@ public class OrderDaoDB implements OrderDao {
       statement.setInt(3, newOrder.getCumulativeQuantity());
       statement.setBigDecimal(4, newOrder.getPrice());
       return statement;
+
     }, keyHolder);
 
     newOrder.setOrderId(keyHolder.getKey().intValue());
@@ -75,31 +79,26 @@ public class OrderDaoDB implements OrderDao {
 
   @Override
   public boolean updateOrder(Order order) {
-    final String UPDATE_ORDER = "UPDATE order SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
-    jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId());
-    return false;
+    final String UPDATE_ORDER = "UPDATE ordertable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
+    return jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId()) > 0;
   }
 
   @Override
   public boolean deleteOrderById(int orderId) {
-    return false;
+    final String DELETE_ORDER = "DELETE FROM ordertable WHERE orderId = ?";
+    return jdbc.update(DELETE_ORDER, orderId) > 0;
   }
 
   @Override
   public boolean cancelOrder(int orderId) {
-    final String CANCEL_ORDER = "UPDATE order SET orderStatus = canceled WHERE orderId = orderId";
-    jdbc.update(CANCEL_ORDER);
-    return false;
+    final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = 'canceled' WHERE orderId = ?";
+    return jdbc.update(CANCEL_ORDER, orderId) > 0;
   }
 
   @Override
-  public List<Order> getOrdersByClientId(int clientId) {
-    return null;
-  }
-
-  @Override
-  public List<Order> getCurrentOrders() {
-    return null;
+  public List<Order> getCurrentOrders(){
+    final String SELECT_CURRENT_ORDERS = "SELECT * FROM ordertable WHERE orderStatus != 'canceled' AND orderStatus != 'completed'";
+    return jdbc.query(SELECT_CURRENT_ORDERS, new OrderMapper());
   }
 
   private static final class OrderMapper implements RowMapper<Order> {
@@ -116,4 +115,5 @@ public class OrderDaoDB implements OrderDao {
       return order;
     }
   }
+
 }
