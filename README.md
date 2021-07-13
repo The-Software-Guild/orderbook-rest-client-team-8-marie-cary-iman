@@ -2,6 +2,35 @@
 
 ### Completed Endpoints
 
+#### Get Current Orders : orderbook/current
+GET request with no payload.
+Returns 200 OK and JSO with all orders that are not canceled or completed
+
+Example JSON return
+```
+[{
+        "orderId": 1,
+        "clientId": 3,
+        "stockSymbol": "MSFT",
+        "orderType": "buy",
+        "orderStatus": "new",
+        "cumulativeQuantity": 30,
+        "price": 279.7000000000,
+        "timestamp": "2021-07-13T15:00:00.000+0000"
+    },
+    {
+        "orderId": 2,
+        "clientId": 3,
+        "stockSymbol": "MSFT",
+        "orderType": "buy",
+        "orderStatus": "new",
+        "cumulativeQuantity": 40,
+        "price": 278.9900000000,
+        "timestamp": "2021-07-13T16:00:00.000+0000"
+    }, ... ]
+
+```
+
 ---
 
 #### Create Order : orderbook/create  
@@ -72,6 +101,7 @@ Example JSON return
 ```
 
 ---
+
 
 
 things to do:
