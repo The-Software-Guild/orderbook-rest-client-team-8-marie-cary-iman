@@ -1,6 +1,7 @@
 package app.dto;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 public class Order {
@@ -11,9 +12,17 @@ public class Order {
   private String orderStatus;
   private int cumulativeQuantity;
   private BigDecimal price;
-
+  private Timestamp timestamp;
   public int getOrderId() {
     return orderId;
+  }
+
+  public void setTimestamp(Timestamp timestamp){
+    this.timestamp = timestamp;
+  }
+
+  public Timestamp getTimestamp () {
+    return this.timestamp;
   }
 
   public void setOrderId(int orderId) {
