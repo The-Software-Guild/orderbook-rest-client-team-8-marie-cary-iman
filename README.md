@@ -1,5 +1,79 @@
 # Order Book
 
+### Completed Endpoints
+
+---
+
+#### Create Order : orderbook/create  
+POST request creates an order with order status "Begin".  
+Returns 201 CREATED and the orderId  
+
+Example JSON return  
+```
+{
+  "orderId" : 1
+}
+```
+
+---
+
+#### Get All Orders : orderbook/all  
+GET request returns a JSON with all the orders in the Order Table  
+
+Example JSON return  
+```
+[{  
+  "orderId": 1,  
+  "clientId" : 1,   
+  "stockSymbol" : "TSLA",  
+  "orderType" : "BID",  
+  "orderStatus" : "New",
+  "quantity" : 50,
+  "price" : 37.50
+},
+{
+  "orderId": 2,  
+  "clientId" : 1,   
+  "stockSymbol" : "TSLA",  
+  "orderType" : "ASK",  
+  "orderStatus" : "Partial",
+  "quantity" : 25,
+  "price" : 40.25
+},
+...]
+```
+
+---
+
+#### Update Order By Id : orderbook/order/{orderId}
+PUT request with JSON payload.
+If no order matches, returns 404 and displays an error message.
+If update successful, returns 202 update success, OrderId, and OrderStatus.
+
+Example JSON payload  
+```
+{  
+  "orderId": 1,  
+  "clientId" : 1,   
+  "stockSymbol" : "TSLA",  
+  "orderType" : "BID",  
+  "orderStatus" : "New",
+  "quantity" : 50,
+  "price" : 37.50
+}
+```
+
+Example JSON return  
+```
+{
+  "orderId" : 1.
+  "orderStatus" : "New"
+}
+```
+
+---
+
+
 things to do:
 
 ### End Point
