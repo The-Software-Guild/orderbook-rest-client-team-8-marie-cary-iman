@@ -41,6 +41,7 @@ public class OrderBookDaoDB implements OrderBookDao {
   @Override
   @Transactional
   public Order addOrder(Order newOrder) {
+
     final String INSERT_ORDER = "INSERT INTO orderbook(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
