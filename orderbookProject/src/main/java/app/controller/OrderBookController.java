@@ -44,25 +44,24 @@ public class OrderBookController {
   and order id with error message on failure.
    */
   // TODO: Custom message
-  public ResponseEntity update(@PathVariable int orderId, @RequestBody Order order){
-    System.out.println(order.getOrderId());
-    System.out.println(order.getCumulativeQuantity());
-    System.out.println(order.getPrice());
-    ResponseEntity response = new ResponseEntity(HttpStatus.NOT_FOUND);
+  public String update(@PathVariable int orderId, @RequestBody Order order){
+    String status = "404";
+    String message = "";
     if(orderId != order.getOrderId()) {
-      response = new ResponseEntity(HttpStatus.UNPROCESSABLE_ENTITY);
+      status = "404";
+      message = "ERROR MESSAGE"; //TODO informative message
     } else if(dao.updateOrder(order)) {
-
-      response = new ResponseEntity(HttpStatus.NO_CONTENT);
+      status = "202";
+      message = "UPDATE SUCCESS";
     }
-    return response;
+    return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
 
-  @PostMapping("/cancel")
+  @PutMapping("/cancel/{orderId}")
   /*attempts to cancel order by passing orderId. On success, returns the OrderId and updated order status. If the order was completed/canceled, return an error containing orderId, order status, and informative
   message
    */
-  public String cancel(int orderId) {
+  public String cancel(@PathVariable int orderId) {
     String status;
     String message;
     if(dao.cancelOrder(orderId)){
@@ -70,10 +69,9 @@ public class OrderBookController {
       message = "ORDER CANCELED";
     } else {
       status = "404";
-      message = "SOME INFORMATIVE MESSAGE";
+      message = "SOME INFORMATIVE MESSAGE"; //TODO: reason for 404
     }
     return String.format("%s %s. OrderId: %d",status, message, orderId);
-
   }
 
 

@@ -81,9 +81,10 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
+  //TODO: add checks that orderId exists and that status is not completed/canceled
   public boolean cancelOrder(int orderId) {
-    final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = canceled WHERE orderId = orderId";
-    jdbc.update(CANCEL_ORDER);
+    final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = 'canceled' WHERE orderId = ?";
+    jdbc.update(CANCEL_ORDER, orderId);
     return true;
   }
 
