@@ -20,21 +20,20 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     @Override
     public Order checkValidOrder(Order order) {
-
-
         System.out.println("Compare New order to order Table");
-        if (order.getOrderType().equals("ask")) {
-            List<Order> buyOrders = daoDB.getBuyOrders();
-            for (int i = 0; i < buyOrders.size(); i++) {
-                if(buyOrders.get(i).getPrice().compareTo(order.getPrice()) == -1 ){
-                    System.out.println("Select this order to sell");
+        if (order.getOrderType().equals("Sell")) {
+            List<Order> orders = daoDB.getBuyOrders();
+            for (Order order1 : orders) {
+
+                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
+                    System.out.println("Select this order to buy");
                     break;
                 }
             }
         } else {
-            List<Order> sellOrders = daoDB.getSellOrders();
-            for (int i = 0; i < sellOrders.size(); i++) {
-                if(sellOrders.get(i).getPrice().compareTo(order.getPrice()) == 1){
+            List<Order> orders = daoDB.getSellOrders();
+            for (Order order1 : orders) {
+                if(order1.getPrice().compareTo(order.getPrice()) == 1){
                     System.out.println("Select this order to sell");
                     break;
                 }
