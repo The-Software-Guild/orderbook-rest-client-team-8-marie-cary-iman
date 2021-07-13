@@ -79,8 +79,8 @@ public class OrderBookController {
   @GetMapping("/current")
   /* return list of all active orders (NOT completed or canceled). This should include all info of each order
    */
-  public void current(){
-
+  public List<Order> current(){
+    return dao.getCurrentOrders();
   }
 
   @GetMapping("/orders/{clientId}")

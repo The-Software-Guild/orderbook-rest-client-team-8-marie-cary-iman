@@ -88,6 +88,12 @@ public class OrderBookDaoDB implements OrderBookDao {
     return true;
   }
 
+  @Override
+  public List<Order> getCurrentOrders(){
+    final String SELECT_CURRENT_ORDERS = "SELECT * FROM ordertable WHERE orderStatus != 'canceled' AND orderStatus != 'completed'";
+    return jdbc.query(SELECT_CURRENT_ORDERS, new OrderMapper());
+  }
+
 
   private static final class OrderMapper implements RowMapper<Order> {
     @Override
@@ -103,5 +109,7 @@ public class OrderBookDaoDB implements OrderBookDao {
       return order;
     }
   }
+
+
 
 }
