@@ -23,9 +23,9 @@ CREATE TABLE orderTable(
 CREATE TABLE trade(
   tradeId INT PRIMARY KEY AUTO_INCREMENT,
   buyerId INT,
-  buyerPrice DECIMAL,
+  buyerPrice DECIMAL(20,10),
   sellerId INT,
-  sellerPrice DECIMAL,
+  sellerPrice DECIMAL(20,10),
   quantityFilled INT,
   executionTime TIMESTAMP,
   CONSTRAINT fk_buyer_id FOREIGN KEY (buyerId) REFERENCES `client`(clientId),

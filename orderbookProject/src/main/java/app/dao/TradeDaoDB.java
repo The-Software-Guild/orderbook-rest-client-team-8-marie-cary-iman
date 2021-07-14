@@ -31,7 +31,7 @@ public class TradeDaoDB implements TradeDao{
     @Override
     @Transactional
     public Trade addTrade(Trade newTrade) {
-        final String INSERT_TRADE = "INSERT INTO table(buyerId, buyerPrice, sellerId, sellerPrice, quantityFilled) VALUES(?,?,?,?,?)";
+        final String INSERT_TRADE = "INSERT INTO trade(buyerId, buyerPrice, sellerId, sellerPrice, quantityFilled) VALUES(?,?,?,?,?)";
 
         GeneratedKeyHolder keyholder = new GeneratedKeyHolder();
 
@@ -45,7 +45,6 @@ public class TradeDaoDB implements TradeDao{
             statement.setInt(3, newTrade.getSellerId());
             statement.setBigDecimal(4, newTrade.getSellerPrice());
             statement.setInt(5, newTrade.getQuantityFilled());
-
             return statement;
         }, keyholder);
 
@@ -56,8 +55,8 @@ public class TradeDaoDB implements TradeDao{
     @Override
     public Trade getTradeById(int tradeId) {
         try{
-            final String SELECT_CLIENT_BY_ID = "SELECT * FROM client WHERE clientId = ?";
-            return jdbc.queryForObject(SELECT_CLIENT_BY_ID, new TradeMapper(), tradeId);
+            final String SELECT_TRADE_BY_ID = "SELECT * FROM trade WHERE tradeId = ?";
+            return jdbc.queryForObject(SELECT_TRADE_BY_ID, new TradeMapper(), tradeId);
         } catch (DataAccessException ex) {
             return null;
         }
@@ -79,9 +78,7 @@ public class TradeDaoDB implements TradeDao{
             trade.setSellerId(rs.getInt("sellerId"));
             trade.setSellerPrice(rs.getBigDecimal("sellerPrice"));
             trade.setQuantityFilled(rs.getInt("quantityFilled"));
-            trade.setExecutionTime(rs.getTimestamp("executionTime"));
             return trade;
         }
     }
-
 }
