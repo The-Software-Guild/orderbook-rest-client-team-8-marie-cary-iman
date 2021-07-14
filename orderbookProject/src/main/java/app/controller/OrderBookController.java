@@ -2,6 +2,8 @@ package app.controller;
 
 import app.dao.OrderBookDao;
 import app.dto.Order;
+import app.serviceLayer.OrderBookServiceLayer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +13,9 @@ import java.util.List;
 @RequestMapping("orderbook")
 public class OrderBookController {
   private final OrderBookDao dao;
+
+  @Autowired
+  OrderBookServiceLayer service;
 
   public OrderBookController(OrderBookDao dao) {
     this.dao = dao;
@@ -25,7 +30,7 @@ public class OrderBookController {
   @RequestMapping("/all")
   @GetMapping
   public List<Order> all() {
-    return dao.getCurrentOrders();
+    return service.getAllOrders();
   }
 
   @PostMapping("/create")
@@ -78,7 +83,7 @@ public class OrderBookController {
   /* return list of all active orders (NOT completed or canceled). This should include all info of each order
    */
   public List<Order> current(){
-    return dao.getCurrentOrders();
+    return service.getCurrentOrders();
   }
 
   @GetMapping("/orders/{clientId}")

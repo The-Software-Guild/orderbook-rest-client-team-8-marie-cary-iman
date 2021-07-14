@@ -9,11 +9,13 @@ import app.dto.Trade;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
 import java.util.List;
 
+@Service
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc;
 
@@ -28,6 +30,16 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     OrderBookServiceLayerImpl(JdbcTemplate jdbcTemplate) {
         this.jdbc = jdbcTemplate;
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderDao.getAllOrders();
+    }
+
+    @Override
+    public List<Order> getCurrentOrders() {
+        return orderDao.getCurrentOrders();
     }
 
     @Override
