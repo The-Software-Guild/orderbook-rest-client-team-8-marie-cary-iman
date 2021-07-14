@@ -1,9 +1,13 @@
 package app.serviceLayer;
 
+import app.dao.ClientDao;
+import app.dao.OrderBookDao;
 import app.dao.OrderBookDaoDB;
+import app.dao.TradeDao;
 import app.dto.Order;
 import app.dto.Trade;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.Timestamp;
@@ -11,14 +15,26 @@ import java.sql.Timestamp;
 import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
-    private JdbcTemplate jdbc = new JdbcTemplate();
-    OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
+    private JdbcTemplate jdbc;
+
+    @Autowired
+    OrderBookDao orderDao;
+
+    @Autowired
+    ClientDao clientDao;
+
+    @Autowired
+    TradeDao tradeDao;
+
+    OrderBookServiceLayerImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbc = jdbcTemplate;
+    }
 
     @Override
     public Order checkValidOrder(Order order) {
         System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("Sell")) {
-            List<Order> orders = daoDB.getBuyOrders(order.getStockSymbol());
+            List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
 
                 if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
@@ -27,7 +43,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
                 }
             }
         } else {
-            List<Order> orders = daoDB.getSellOrders(order.getStockSymbol());
+            List<Order> orders = orderDao.getSellOrders(order.getStockSymbol());
             for (Order order1 : orders) {
                 if(order1.getPrice().compareTo(order.getPrice()) == 1){
                     order = order1;
