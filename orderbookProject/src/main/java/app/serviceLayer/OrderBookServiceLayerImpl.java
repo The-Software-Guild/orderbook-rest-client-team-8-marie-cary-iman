@@ -43,7 +43,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     };
 
     private boolean existingOrder(Order order){
-        boolean match;
         List<Order> allOrders = getAllOrders();
         List<Order> existingOrder = allOrders.stream()
                 .filter(o -> o.getOrderId() == order.getOrderId())
@@ -91,7 +90,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         else
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
-
 
     private Order checkValidOrder(Order order) {
         System.out.println("Compare New order to order Table");
@@ -170,5 +168,19 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         trade.setExecutionTime(timestamp);
 
         tradeDao.addTrade(trade);
+    }
+
+    @Override
+    public boolean cancelOrder(int orderId) throws UnexpectedOrderStateError {
+        List<Order> currentOrders = orderDao.getCurrentOrders();
+        List<Order> orderToBeCanceled = currentOrders.stream()
+                .filter( o -> o.getOrderId() == orderId )
+                .collect(Collectors.toList());
+
+        if (orderToBeCanceled.isEmpty()) {
+            throw new UnexpectedOrderStateError("This order is not in a state where it can be canceled.");
+        } else {
+            return orderDao.cancelOrder(orderId);
+        }
     }
 }

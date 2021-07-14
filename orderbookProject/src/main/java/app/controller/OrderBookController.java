@@ -72,17 +72,20 @@ public class OrderBookController {
   /*attempts to cancel order by passing orderId. On success, returns the OrderId and updated order status. If the order was completed/canceled, return an error containing orderId, order status, and informative
   message
    */
-  public String cancel(@PathVariable int orderId) {
+  public String cancel(@PathVariable int orderId) throws UnexpectedOrderStateError {
     String status;
     String message;
-    if(dao.cancelOrder(orderId)){
+
+    try {
+      service.cancelOrder(orderId);
       status = "201";
       message = "ORDER CANCELED";
-    } else {
+    } catch (UnexpectedOrderStateError e) {
       status = "404";
-      message = "SOME INFORMATIVE MESSAGE"; //TODO: reason for 404
+      message = e.getMessage();
     }
-    return String.format("%s %s. OrderId: %d",status, message, orderId);
+
+    return String.format("%s %s. OrderId: %d", status, message, orderId);
   }
 
   @GetMapping("/current")

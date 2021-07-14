@@ -63,7 +63,6 @@ public class OrderBookDaoDB implements OrderBookDao {
       final String SELECT_ORDER_BY_CLIENTID = String.format("SELECT * FROM ordertable WHERE clientId = %s ORDER BY orderTime", clientId);
       return jdbc.query(SELECT_ORDER_BY_CLIENTID, new OrderMapper());
     } catch (DataAccessException e) {
-      e.printStackTrace();
       return null;
     }
   }
