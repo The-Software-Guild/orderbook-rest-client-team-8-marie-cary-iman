@@ -75,10 +75,12 @@ public class OrderBookDaoDB implements OrderBookDao {
               INSERT_ORDER,
               Statement.RETURN_GENERATED_KEYS);
 
-      statement.setString(1, newOrder.getOrderType());
-      statement.setString(2, newOrder.getStockSymbol());
-      statement.setInt(3, newOrder.getCumulativeQuantity());
-      statement.setBigDecimal(4, newOrder.getPrice());
+      statement.setInt(1, newOrder.getClientId());
+      statement.setString(2, newOrder.getOrderType());
+      statement.setString(3, newOrder.getOrderStatus());
+      statement.setString(4, newOrder.getStockSymbol());
+      statement.setInt(5, newOrder.getCumulativeQuantity());
+      statement.setBigDecimal(6, newOrder.getPrice());
       return statement;
 
     }, keyHolder);
