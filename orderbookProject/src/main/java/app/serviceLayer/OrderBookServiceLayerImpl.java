@@ -26,7 +26,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             for (Order order1 : orders) {
 
                 if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
-                    System.out.println("Select this order to buy");
+                    order = order1;
                     break;
                 }
             }
@@ -34,7 +34,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             List<Order> orders = daoDB.getSellOrders();
             for (Order order1 : orders) {
                 if(order1.getPrice().compareTo(order.getPrice()) == 1){
-                    System.out.println("Select this order to sell");
+                    order = order1;
                     break;
                 }
             }
