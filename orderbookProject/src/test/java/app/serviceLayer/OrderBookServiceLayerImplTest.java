@@ -39,7 +39,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         Order buyOrder1 = new Order();
 
         buyOrder1.setClientId(1);
-        buyOrder1.setOrderType("BID");
+        buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
         buyOrder1.setCumulativeQuantity(50);
@@ -48,19 +48,19 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
         Order buyOrder2 = new Order();
         buyOrder2.setClientId(1);
-        buyOrder2.setOrderType("BID");
+        buyOrder2.setOrderType("buy");
         buyOrder2.setOrderStatus("New");
         buyOrder2.setStockSymbol("TSLA");
         buyOrder2.setCumulativeQuantity(50);
         buyOrder2.setPrice(new BigDecimal("19.99"));
         orderDao.addOrder(buyOrder2);
-        List<Order> buyList = orderDao.getBuyOrders();
+        List<Order> buyList = orderDao.getBuyOrders(buyOrder1.getStockSymbol());
         assertNotNull(buyList);
         assertEquals(2,buyList.size());
 
         Order sellOrder = new Order();
         sellOrder.setClientId(2);
-        sellOrder.setOrderType("ASK");
+        sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
@@ -78,7 +78,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         Order buyOrder1 = new Order();
 
         buyOrder1.setClientId(1);
-        buyOrder1.setOrderType("BID");
+        buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
         buyOrder1.setCumulativeQuantity(50);
@@ -88,7 +88,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
         Order sellOrder = new Order();
         sellOrder.setClientId(2);
-        sellOrder.setOrderType("ASK");
+        sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
@@ -106,7 +106,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         Order buyOrder1 = new Order();
 
         buyOrder1.setClientId(1);
-        buyOrder1.setOrderType("BID");
+        buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
         buyOrder1.setCumulativeQuantity(50);
@@ -116,7 +116,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
         Order sellOrder = new Order();
         sellOrder.setClientId(2);
-        sellOrder.setOrderType("ASK");
+        sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
