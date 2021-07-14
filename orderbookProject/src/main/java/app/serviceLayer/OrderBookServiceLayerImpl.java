@@ -2,6 +2,7 @@ package app.serviceLayer;
 
 
 
+import app.dao.OrderBookDao;
 import app.dao.OrderBookDaoDB;
 import app.dto.Order;
 import app.dto.Trade;
@@ -14,18 +15,21 @@ import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc = new JdbcTemplate();
-    OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
+    OrderBookDaoDB daoDB;
+    public OrderBookServiceLayerImpl(OrderBookDaoDB daoDB){
+        this.daoDB = daoDB;
+    }
 
 
 
     @Override
     public Order checkValidOrder(Order order) {
         System.out.println("Compare New order to order Table");
-        if (order.getOrderType().equals("Sell")) {
+        if (order.getOrderType().equals("ASK")) {
             List<Order> orders = daoDB.getBuyOrders();
             for (Order order1 : orders) {
 
-                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
+                if(order1.getPrice().compareTo(order.getPrice()) == 1 ){
                     order = order1;
                     break;
                 }
@@ -33,7 +37,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         } else {
             List<Order> orders = daoDB.getSellOrders();
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == 1){
+                if(order1.getPrice().compareTo(order.getPrice()) == -1){
                     order = order1;
                     break;
                 }
@@ -83,6 +87,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         trade.setBuyerPrice(buyOrder.getPrice());
         trade.setSellerId(sellOrder.getClientId());
         trade.setSellerPrice(sellOrder.getPrice());
+        trade.setQuantityFilled(soldQuantity);
         return trade;
     }
 }

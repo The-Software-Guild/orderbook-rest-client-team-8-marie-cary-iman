@@ -30,13 +30,13 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getSellOrders() {
-    final String SELECT_SELL_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'sell' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price ASC";
+    final String SELECT_SELL_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'ASK' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price ASC";
     return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
   }
 
   @Override
   public List<Order> getBuyOrders() {
-    final String SELECT_BUY_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'buy' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price DESC";
+    final String SELECT_BUY_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'BID' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price DESC";
     return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
   }
 
