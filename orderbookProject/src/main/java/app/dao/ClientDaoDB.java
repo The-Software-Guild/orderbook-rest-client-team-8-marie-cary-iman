@@ -19,7 +19,7 @@ public class ClientDaoDB implements ClientDao{
   public ClientDaoDB(JdbcTemplate jdbcTemplate) { this.jdbc = jdbcTemplate; }
 
   @Override
-  public List<Client> getAllClient() {
+  public List<Client> getAllClients() {
     final String SELECT_ALL_CLIENTS = "SELECT * FROM client";
     return jdbc.query(SELECT_ALL_CLIENTS, new ClientMapper());
   }

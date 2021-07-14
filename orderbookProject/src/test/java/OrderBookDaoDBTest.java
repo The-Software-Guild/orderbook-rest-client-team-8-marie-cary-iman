@@ -1,6 +1,8 @@
 import app.TestApplicationConfiguration;
 
+import app.dao.ClientDao;
 import app.dao.OrderBookDao;
+import app.dao.TradeDao;
 import app.dto.Order;
 
 import org.junit.Before;
@@ -21,6 +23,12 @@ public class OrderBookDaoDBTest {
   @Autowired
   OrderBookDao orderDao;
 
+  @Autowired
+  TradeDao tradeDao;
+
+  @Autowired
+  ClientDao clientDao;
+
   /**
    * TO BE REFACTORED AS DAOS ARE ADDED
    * These test methods have hard coded clientIds that need to be created in the database before running
@@ -29,6 +37,7 @@ public class OrderBookDaoDBTest {
   @Before
   public void setUp() {
     List<Order> orders = orderDao.getAllOrders();
+    List<Client> clients = clientDao.getAllClients();
     for (Order order : orders) {
       orderDao.deleteOrderById(order.getOrderId());
     }
