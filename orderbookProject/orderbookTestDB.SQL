@@ -28,6 +28,7 @@ CREATE TABLE trade(
   sellerPrice DECIMAL,
   quantityFilled INT,
   executionTime TIMESTAMP,
+  stockSymbol VARCHAR(10),
   CONSTRAINT fk_buyer_id FOREIGN KEY (buyerId) REFERENCES `client`(clientId),
   CONSTRAINT fk_seller_id FOREIGN KEY (sellerId) REFERENCES `client`(clientId)
 );

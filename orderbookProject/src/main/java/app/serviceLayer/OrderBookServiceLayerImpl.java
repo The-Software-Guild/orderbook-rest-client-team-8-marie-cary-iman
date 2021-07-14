@@ -77,6 +77,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         trade.setSellerId(sellOrder.getClientId());
         trade.setSellerPrice(sellOrder.getPrice());
         trade.setQuantityFilled(soldQuantity);
+        trade.setStockSymbol(buyOrder.getStockSymbol());
         return trade;
     }
 }

@@ -42,6 +42,7 @@ public class TradeDaoDB implements TradeDao{
             statement.setInt(3, newTrade.getSellerId());
             statement.setBigDecimal(4, newTrade.getSellerPrice());
             statement.setInt(5, newTrade.getQuantityFilled());
+            statement.setString(6,newTrade.getStockSymbol());
 
             return statement;
         }, keyholder);
@@ -67,6 +68,7 @@ public class TradeDaoDB implements TradeDao{
             trade.setSellerPrice(rs.getBigDecimal("sellerPrice"));
             trade.setQuantityFilled(rs.getInt("quantityFilled"));
             trade.setExecutionTime(rs.getTimestamp("executionTime"));
+            trade.setStockSymbol(rs.getString("stockSymbol"));
             return trade;
         }
     }
