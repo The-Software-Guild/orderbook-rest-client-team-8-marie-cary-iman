@@ -166,15 +166,6 @@ public class OrderBookDaoDBTest {
     secondOrder.setPrice(new BigDecimal("35.25"));
     secondOrder = orderDao.addOrder(secondOrder);
 
-    Order thirdOrder = new Order();
-    thirdOrder.setClientId(client.getClientId());
-    thirdOrder.setOrderType("sell");
-    thirdOrder.setOrderStatus("canceled");
-    thirdOrder.setStockSymbol("TSLA");
-    thirdOrder.setCumulativeQuantity(50);
-    thirdOrder.setPrice(new BigDecimal("20.00"));
-    thirdOrder = orderDao.addOrder(thirdOrder);
-
     List<Order> buyOrders = orderDao.getBuyOrders(firstOrder.getStockSymbol());
     List<Order> sellOrders = orderDao.getSellOrders(secondOrder.getStockSymbol());
 
@@ -185,7 +176,6 @@ public class OrderBookDaoDBTest {
     assertFalse(buyOrders.containsAll(sellOrders));
     assertTrue(buyOrders.contains(firstOrder));
     assertTrue(sellOrders.contains(secondOrder));
-    assertFalse(sellOrders.contains(thirdOrder));
   }
 
   @Test
