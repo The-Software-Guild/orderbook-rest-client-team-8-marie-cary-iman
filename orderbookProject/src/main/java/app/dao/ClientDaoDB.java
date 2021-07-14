@@ -3,14 +3,17 @@ package app.dao;
 import app.dto.Client;
 import app.dto.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.List;
 
+@Repository
 public class ClientDaoDB implements ClientDao{
 
   private final JdbcTemplate jdbc;
@@ -19,9 +22,19 @@ public class ClientDaoDB implements ClientDao{
   public ClientDaoDB(JdbcTemplate jdbcTemplate) { this.jdbc = jdbcTemplate; }
 
   @Override
-  public List<Client> getAllClient() {
+  public List<Client> getAllClients() {
     final String SELECT_ALL_CLIENTS = "SELECT * FROM client";
     return jdbc.query(SELECT_ALL_CLIENTS, new ClientMapper());
+  }
+
+  @Override
+  public Client getClientById(int clientId) {
+    try{
+      final String SELECT_CLIENT_BY_ID = "SELECT * FROM client WHERE clientId = ?";
+      return jdbc.queryForObject(SELECT_CLIENT_BY_ID, new ClientMapper(), clientId);
+    } catch (DataAccessException ex) {
+      return null;
+    }
   }
 
   @Override
