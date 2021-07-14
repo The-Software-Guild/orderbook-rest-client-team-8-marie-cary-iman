@@ -6,8 +6,9 @@ import java.util.List;
 
 public interface OrderBookDao {
   List<Order> getAllOrders();
-  List<Order> getSellOrders();
-  List<Order> getBuyOrders();
+  List<Order> getAllOrders(String stockSymbol);
+  List<Order> getSellOrders(String stockSymbol);
+  List<Order> getBuyOrders(String stockSymbol);
 
   Order getOrder(int orderId);
 
