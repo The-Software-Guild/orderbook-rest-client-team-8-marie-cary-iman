@@ -86,7 +86,7 @@ public class Order {
       return false;
     }
     Order order = (Order)o;
-    return orderId == order.orderId && clientId == order.clientId && cumulativeQuantity == order.cumulativeQuantity && Objects.equals(stockSymbol, order.stockSymbol) && Objects.equals(orderType, order.orderType) && Objects.equals(orderStatus, order.orderStatus) && Objects.equals(price, order.price);
+    return orderId == order.orderId && clientId == order.clientId && cumulativeQuantity == order.cumulativeQuantity && stockSymbol.equals(order.stockSymbol) && orderType.equals(order.orderType) && orderStatus.equals(order.orderStatus) && price.compareTo(order.price) == 0;
   }
 
   @Override
