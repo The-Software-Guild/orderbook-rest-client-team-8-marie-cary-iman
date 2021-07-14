@@ -29,6 +29,18 @@ public class OrderBookDaoDB implements OrderBookDao {
   }
 
   @Override
+  public List<Order> getSellOrders() {
+    final String SELECT_SELL_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'sell' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price ASC";
+    return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
+  }
+
+  @Override
+  public List<Order> getBuyOrders() {
+    final String SELECT_BUY_ORDERS = "SELECT * FROM ordertable WHERE orderType = 'buy' AND orderStatus = 'new' OR orderStatus = 'partial' ORDER BY price DESC";
+    return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
+  }
+
+  @Override
   public Order getOrder(int orderId) {
     try{
       final String SELECT_ORDER_BY_ID = "SELECT * FROM ordertable WHERE orderId = ?";
@@ -63,12 +75,10 @@ public class OrderBookDaoDB implements OrderBookDao {
               INSERT_ORDER,
               Statement.RETURN_GENERATED_KEYS);
 
-      statement.setInt(1, newOrder.getClientId());
-      statement.setString(2, newOrder.getOrderType());
-      statement.setString(3, newOrder.getOrderStatus());
-      statement.setString(4, newOrder.getStockSymbol());
-      statement.setInt(5, newOrder.getCumulativeQuantity());
-      statement.setBigDecimal(6, newOrder.getPrice());
+      statement.setString(1, newOrder.getOrderType());
+      statement.setString(2, newOrder.getStockSymbol());
+      statement.setInt(3, newOrder.getCumulativeQuantity());
+      statement.setBigDecimal(4, newOrder.getPrice());
       return statement;
 
     }, keyHolder);
@@ -90,7 +100,7 @@ public class OrderBookDaoDB implements OrderBookDao {
     return jdbc.update(DELETE_ORDER, orderId) > 0;
   }
 
-  //TODO: add checks that orderId exists and that status is not completed/canceled
+  @Override
   public boolean cancelOrder(int orderId) {
     final String CANCEL_ORDER = "UPDATE ordertable SET orderStatus = 'canceled' WHERE orderId = ?";
     return jdbc.update(CANCEL_ORDER, orderId) > 0;
@@ -113,7 +123,6 @@ public class OrderBookDaoDB implements OrderBookDao {
       order.setOrderStatus(rs.getString("orderStatus"));
       order.setCumulativeQuantity(rs.getInt("cumulativeQuantity"));
       order.setPrice(rs.getBigDecimal("price"));
-      order.setTimestamp(rs.getTimestamp("orderTime"));
       return order;
     }
   }

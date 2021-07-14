@@ -6,6 +6,8 @@ import java.util.List;
 
 public interface OrderBookDao {
   List<Order> getAllOrders();
+  List<Order> getSellOrders();
+  List<Order> getBuyOrders();
 
   Order getOrder(int orderId);
 

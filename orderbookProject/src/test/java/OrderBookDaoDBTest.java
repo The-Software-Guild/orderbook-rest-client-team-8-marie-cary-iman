@@ -1,5 +1,6 @@
 import app.TestApplicationConfiguration;
-import app.dao.OrderBookDao;
+
+import app.dao.OrderDao;
 import app.dto.Order;
 
 import org.junit.Before;
@@ -18,7 +19,7 @@ import static org.junit.Assert.*;
 @SpringBootTest(classes = TestApplicationConfiguration.class)
 public class OrderBookDaoDBTest {
   @Autowired
-  OrderBookDao orderDao;
+  OrderDao orderDao;
 
   /**
    * TO BE REFACTORED AS DAOS ARE ADDED
