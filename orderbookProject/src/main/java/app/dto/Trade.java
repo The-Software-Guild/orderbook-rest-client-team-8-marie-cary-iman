@@ -1,7 +1,9 @@
 package app.dto;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
+import java.util.Objects;
 
 public class Trade {
   private Integer tradeId;
@@ -66,5 +68,22 @@ public class Trade {
 
   public void setExecutionTime(Date executionTime) {
     this.executionTime = executionTime;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Trade trade = (Trade)o;
+    return Objects.equals(tradeId, trade.tradeId) && Objects.equals(buyerId, trade.buyerId) && Objects.equals(buyerPrice, trade.buyerPrice) && Objects.equals(sellerId, trade.sellerId) && Objects.equals(sellerPrice, trade.sellerPrice) && Objects.equals(quantityFilled, trade.quantityFilled);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(tradeId, buyerId, buyerPrice, sellerId, sellerPrice, quantityFilled);
   }
 }
