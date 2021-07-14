@@ -9,4 +9,6 @@ public interface TradeDao {
     Trade addTrade(Trade newTrade);
     Trade getTradeById(int tradeId);
     boolean deleteTrade(int tradeId);
+    List<Trade> getTradesByOrderId(int orderId);
+
 }

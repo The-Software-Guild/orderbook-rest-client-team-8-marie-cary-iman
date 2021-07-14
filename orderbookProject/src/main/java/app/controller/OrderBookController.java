@@ -1,7 +1,9 @@
 package app.controller;
 
 import app.dao.OrderBookDao;
+import app.dao.TradeDao;
 import app.dto.Order;
+import app.dto.Trade;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,10 +12,13 @@ import java.util.List;
 @RestController
 @RequestMapping("orderbook")
 public class OrderBookController {
-  private final OrderBookDao dao;
+  private final OrderBookDao orderDao;
+  private final TradeDao tradeDao;
 
-  public OrderBookController(OrderBookDao dao) {
-    this.dao = dao;
+
+  public OrderBookController(OrderBookDao orderDao, TradeDao tradeDao) {
+    this.orderDao = orderDao;
+    this.tradeDao = tradeDao;
   }
 
   /**
@@ -25,7 +30,7 @@ public class OrderBookController {
   @RequestMapping("/all")
   @GetMapping
   public List<Order> all() {
-    return dao.getCurrentOrders();
+    return orderDao.getCurrentOrders();
   }
 
   @PostMapping("/create")
@@ -33,7 +38,7 @@ public class OrderBookController {
   /* Create order with status "Begin". Return 201 CREATED as well as OrderId */
   public String create(@RequestBody Order order){
     order.setOrderStatus("begin");
-    dao.addOrder(order);
+    orderDao.addOrder(order);
     System.out.println(order.getOrderStatus());
     return String.format("201 CREATED. OrderId: %d",order.getOrderId());
   }
@@ -50,7 +55,7 @@ public class OrderBookController {
     if(orderId != order.getOrderId()) {
       status = "404";
       message = "ERROR MESSAGE"; //TODO informative message
-    } else if(dao.updateOrder(order)) {
+    } else if(orderDao.updateOrder(order)) {
       status = "202";
       message = "UPDATE SUCCESS";
     }
@@ -64,7 +69,7 @@ public class OrderBookController {
   public String cancel(@PathVariable int orderId) {
     String status;
     String message;
-    if(dao.cancelOrder(orderId)){
+    if(orderDao.cancelOrder(orderId)){
       status = "201";
       message = "ORDER CANCELED";
     } else {
@@ -78,21 +83,22 @@ public class OrderBookController {
   /* return list of all active orders (NOT completed or canceled). This should include all info of each order
    */
   public List<Order> current(){
-    return dao.getCurrentOrders();
+    return orderDao.getCurrentOrders();
   }
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
   public List<Order> getByClientId(@PathVariable int clientId){
-    List<Order> orders = dao.getOrdersByClientId(clientId);
+    List<Order> orders = orderDao.getOrdersByClientId(clientId);
     return orders;
   }
 
-/*
+
   @GetMapping("trades/{orderId}")
   //returns each trade of a specified order based on id
-  public List<Order> getTradesByOrderId(@PathVariable int id){
-    List<Trade> trades = dao.geTradesByOrderId;
+  public List<Trade> getTradesByOrderId(@PathVariable int id){
+    List<Trade> trades = tradeDao.getTradesByOrderId(id);
+    return trades;
   }
 
   /* OPTIONAL
