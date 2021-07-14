@@ -15,20 +15,22 @@ CREATE TABLE orderTable(
   orderType VARCHAR(10),
   orderStatus VARCHAR(40),
   cumulativeQuantity INT,
-  price DECIMAL(10,2),
+  price DECIMAL(20,10),
+  orderTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_client_id FOREIGN KEY (clientId) REFERENCES `client`(clientId)
 );
 
 CREATE TABLE trade(
   tradeId INT PRIMARY KEY AUTO_INCREMENT,
   buyerId INT,
-  buyerPrice DECIMAL(10,2),
+  buyerPrice DECIMAL,
   sellerId INT,
-  sellerPrice DECIMAL(10,2),
+  sellerPrice DECIMAL,
   quantityFilled INT,
   executionTime TIMESTAMP,
   CONSTRAINT fk_buyer_id FOREIGN KEY (buyerId) REFERENCES `client`(clientId),
   CONSTRAINT fk_seller_id FOREIGN KEY (sellerId) REFERENCES `client`(clientId)
 );
 
-INSERT INTO client (clientId, name) VALUES (1, "Pied Piper");
+INSERT INTO client (name) VALUES ("Pied Piper");
+INSERT INTO client (name) VALUES ("Hooli");
