@@ -2,7 +2,6 @@ package app.serviceLayer;
 
 import app.dao.ClientDao;
 import app.dao.OrderBookDao;
-import app.dao.OrderBookDaoDB;
 import app.dao.TradeDao;
 import app.dto.Order;
 import app.dto.Trade;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
@@ -32,6 +32,16 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         this.jdbc = jdbcTemplate;
     }
 
+    private boolean existingOrder(Order order){
+        boolean match;
+        List<Order> allOrders = getAllOrders();
+        List<Order> existingOrder = allOrders.stream()
+                .filter(o -> o.getOrderId() == order.getOrderId())
+                .collect(Collectors.toList());
+
+        return !existingOrder.isEmpty();
+    }
+
     @Override
     public List<Order> getAllOrders() {
         return orderDao.getAllOrders();
@@ -40,6 +50,14 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     @Override
     public List<Order> getCurrentOrders() {
         return orderDao.getCurrentOrders();
+    }
+
+    @Override
+    public boolean updateOrder(Order order) throws OrderDoesNotExistError {
+        if (existingOrder(order))
+            return orderDao.updateOrder(order);
+        else
+            throw new OrderDoesNotExistError("Order does not exist with that orderId, cannot update.");
     }
 
     @Override

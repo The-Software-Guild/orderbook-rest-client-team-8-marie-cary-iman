@@ -3,6 +3,7 @@ package app.controller;
 import app.dao.OrderBookDao;
 import app.dto.Order;
 import app.serviceLayer.OrderBookServiceLayer;
+import app.serviceLayer.OrderDoesNotExistError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,14 +52,21 @@ public class OrderBookController {
   // TODO: Custom message
   public String update(@PathVariable int orderId, @RequestBody Order order){
     String status = "404";
-    String message = "";
+    String message;
+
     if(orderId != order.getOrderId()) {
       status = "404";
       message = "ERROR MESSAGE"; //TODO informative message
-    } else if(dao.updateOrder(order)) {
-      status = "202";
-      message = "UPDATE SUCCESS";
+    } else {
+      try {
+        service.updateOrder(order);
+        status = "202";
+        message = "UPDATE SUCCESS";
+      } catch (OrderDoesNotExistError e) {
+        return String.format("%s %s", status, e.getMessage());
+      }
     }
+
     return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
 
