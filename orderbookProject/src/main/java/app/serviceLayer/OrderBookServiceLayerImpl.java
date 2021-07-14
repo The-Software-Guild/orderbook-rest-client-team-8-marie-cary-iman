@@ -1,7 +1,5 @@
 package app.serviceLayer;
 
-
-
 import app.dao.OrderBookDaoDB;
 import app.dto.Order;
 import app.dto.Trade;
@@ -15,8 +13,6 @@ import java.util.List;
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc = new JdbcTemplate();
     OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
-
-
 
     @Override
     public Order checkValidOrder(Order order) {
@@ -39,7 +35,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
                 }
             }
         }
-
         return order;
     }
 
