@@ -13,6 +13,7 @@ public class Order {
   private int cumulativeQuantity;
   private BigDecimal price;
   private Timestamp timestamp;
+
   public int getOrderId() {
     return orderId;
   }

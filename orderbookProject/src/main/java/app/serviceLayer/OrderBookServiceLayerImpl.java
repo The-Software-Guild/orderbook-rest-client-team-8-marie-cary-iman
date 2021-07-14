@@ -1,16 +1,9 @@
 package app.serviceLayer;
-
-
-
-import app.dao.OrderBookDao;
 import app.dao.OrderBookDaoDB;
 import app.dto.Order;
 import app.dto.Trade;
-
 import org.springframework.jdbc.core.JdbcTemplate;
-
 import java.sql.Timestamp;
-
 import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
@@ -19,8 +12,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     public OrderBookServiceLayerImpl(OrderBookDaoDB daoDB){
         this.daoDB = daoDB;
     }
-
-
 
     @Override
     public Order checkValidOrder(Order order) {
@@ -43,7 +34,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
                 }
             }
         }
-
         return order;
     }
 
@@ -72,7 +62,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             sellOrder.setOrderStatus("completed");
             sellOrder.setCumulativeQuantity(0);
         }
-
     }
 
     @Override
