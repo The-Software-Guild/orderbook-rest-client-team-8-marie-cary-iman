@@ -3,6 +3,7 @@ package app.serviceLayer;
 import app.dao.ClientDao;
 import app.dao.OrderBookDao;
 import app.dao.TradeDao;
+import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
 
@@ -32,6 +33,15 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         this.jdbc = jdbcTemplate;
     }
 
+    private boolean existingClient(int clientId){
+        List<Client> allClients = clientDao.getAllClients();
+        List<Client> existingClient = allClients.stream()
+                .filter(c -> c.getClientId() == clientId)
+                .collect(Collectors.toList());
+
+        return (!existingClient.isEmpty());
+    };
+
     private boolean existingOrder(Order order){
         boolean match;
         List<Order> allOrders = getAllOrders();
@@ -53,20 +63,41 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     }
 
     @Override
-    public boolean updateOrder(Order order) throws OrderDoesNotExistError {
+    public Order addOrder(Order order) throws UnexpectedOrderStateError, UnexpectedClientStateError {
+        boolean orderExists = existingOrder(order);
+        boolean clientExists = existingClient(order.getClientId());
+
+        if (!orderExists && clientExists){
+            Order newOrder = orderDao.addOrder(order);
+            Order pairedOrder = checkValidOrder(newOrder);
+
+            if (pairedOrder != newOrder){
+                executeValidOrder();
+            }
+
+        } else if (orderExists)
+            throw new UnexpectedOrderStateError("This order already exists and thus cannot be created again");
+        else {
+            throw new UnexpectedClientStateError("This client does not exist, aborted order creation");
+        }
+
+        return null;
+    }
+
+    @Override
+    public boolean updateOrder(Order order) throws UnexpectedOrderStateError {
         if (existingOrder(order))
             return orderDao.updateOrder(order);
         else
-            throw new OrderDoesNotExistError("Order does not exist with that orderId, cannot update.");
+            throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
     @Override
     public Order checkValidOrder(Order order) {
         System.out.println("Compare New order to order Table");
-        if (order.getOrderType().equals("Sell")) {
+        if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-
                 if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
                     order = order1;
                     break;
@@ -116,7 +147,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     public Trade createTrade(Order buyOrder, Order sellOrder, int soldQuantity) {
         Trade trade = new Trade();
         //auto increment needed
-        trade.setTradeId(1);
         trade.setBuyerId(buyOrder.getClientId());
         //Date type
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -124,6 +154,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         trade.setBuyerPrice(buyOrder.getPrice());
         trade.setSellerId(sellOrder.getClientId());
         trade.setSellerPrice(sellOrder.getPrice());
-        return trade;
+        return tradeDao.addTrade(trade);
     }
 }

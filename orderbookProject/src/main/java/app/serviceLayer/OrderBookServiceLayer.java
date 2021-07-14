@@ -11,7 +11,9 @@ public interface OrderBookServiceLayer {
     List<Order> getAllOrders();
     List<Order> getCurrentOrders();
 
-    boolean updateOrder(Order order) throws OrderDoesNotExistError;
+    Order addOrder(Order order) throws UnexpectedOrderStateError, UnexpectedClientStateError;
+
+    boolean updateOrder(Order order) throws UnexpectedOrderStateError;
 
     Order checkValidOrder(Order order);
     void executeValidOrder(Order sellOrder,Order buyOrder);

@@ -1,9 +1,9 @@
 package app.controller;
 
-import app.dao.OrderBookDao;
 import app.dto.Order;
 import app.serviceLayer.OrderBookServiceLayer;
-import app.serviceLayer.OrderDoesNotExistError;
+import app.serviceLayer.UnexpectedClientStateError;
+import app.serviceLayer.UnexpectedOrderStateError;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -13,14 +13,9 @@ import java.util.List;
 @RestController
 @RequestMapping("orderbook")
 public class OrderBookController {
-  private final OrderBookDao dao;
 
   @Autowired
   OrderBookServiceLayer service;
-
-  public OrderBookController(OrderBookDao dao) {
-    this.dao = dao;
-  }
 
   /**
    * Mapped to GET requests at /api/current.
@@ -34,13 +29,17 @@ public class OrderBookController {
     return service.getAllOrders();
   }
 
-  @PostMapping("/create")
+  @PostMapping("/logon")
   @ResponseStatus(HttpStatus.CREATED)
   /* Create order with status "Begin". Return 201 CREATED as well as OrderId */
-  public String create(@RequestBody Order order){
-    order.setOrderStatus("begin");
-    dao.addOrder(order);
-    System.out.println(order.getOrderStatus());
+  public String create(@RequestBody Order order) throws UnexpectedClientStateError, UnexpectedOrderStateError {
+    try{
+      order.setOrderStatus("begin");
+      service.addOrder(order);
+    } catch (UnexpectedOrderStateError | UnexpectedClientStateError e) {
+      return String.format("404 ERROR: %s", e.getMessage());
+    }
+
     return String.format("201 CREATED. OrderId: %d",order.getOrderId());
   }
 
@@ -62,7 +61,7 @@ public class OrderBookController {
         service.updateOrder(order);
         status = "202";
         message = "UPDATE SUCCESS";
-      } catch (OrderDoesNotExistError e) {
+      } catch (UnexpectedOrderStateError e) {
         return String.format("%s %s", status, e.getMessage());
       }
     }
