@@ -357,6 +357,52 @@ public class OrderBookDaoDBTest {
     assertEquals(newTrade, tradeFromDao);
   }
 
+  @Test
+  public void testGetAllTradesAndRemove() {
+    Client client = new Client();
+    client.setName("Pied Piper");
+    client = clientDao.addClient(client);
 
+    Order buyOrder = new Order();
+    buyOrder.setClientId(client.getClientId());
+    buyOrder.setOrderType("buy");
+    buyOrder.setOrderStatus("new");
+    buyOrder.setStockSymbol("TSLA");
+    buyOrder.setCumulativeQuantity(50);
+    buyOrder.setPrice(new BigDecimal("20.00"));
+    buyOrder = orderDao.addOrder(buyOrder);
+
+    Order sellOrder = new Order();
+    sellOrder.setClientId(client.getClientId());
+    sellOrder.setOrderType("sell");
+    sellOrder.setOrderStatus("new");
+    sellOrder.setStockSymbol("TSLA");
+    sellOrder.setCumulativeQuantity(50);
+    sellOrder.setPrice(new BigDecimal("20.00"));
+    sellOrder = orderDao.addOrder(sellOrder);
+
+    //Grab orders from Dao to assure not a value mismatch from the database
+    sellOrder = orderDao.getOrder(sellOrder.getOrderId());
+    buyOrder = orderDao.getOrder(buyOrder.getOrderId());
+
+    Trade newTrade = new Trade();
+    newTrade.setSellerId(sellOrder.getClientId());
+    newTrade.setSellerPrice(sellOrder.getPrice());
+    newTrade.setBuyerId(buyOrder.getClientId());
+    newTrade.setBuyerPrice(buyOrder.getPrice());
+    newTrade.setQuantityFilled(Math.min(sellOrder.getCumulativeQuantity(), buyOrder.getCumulativeQuantity()));
+    newTrade = tradeDao.addTrade(newTrade);
+
+    List<Trade> allTrades = tradeDao.getAllTrades();
+
+    assertNotNull(allTrades);
+    assertEquals(1, allTrades.size());
+    assertTrue(allTrades.contains(newTrade));
+
+    tradeDao.deleteTrade(newTrade.getTradeId());
+    allTrades = tradeDao.getAllTrades();
+    assertNotNull(allTrades);
+    assertEquals(0, allTrades.size());
+  }
 
 }
