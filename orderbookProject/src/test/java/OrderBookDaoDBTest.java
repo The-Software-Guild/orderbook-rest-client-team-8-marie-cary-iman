@@ -175,8 +175,8 @@ public class OrderBookDaoDBTest {
     thirdOrder.setPrice(new BigDecimal("20.00"));
     thirdOrder = orderDao.addOrder(thirdOrder);
 
-    List<Order> buyOrders = orderDao.getBuyOrders();
-    List<Order> sellOrders = orderDao.getSellOrders();
+    List<Order> buyOrders = orderDao.getBuyOrders(firstOrder.getStockSymbol());
+    List<Order> sellOrders = orderDao.getSellOrders(secondOrder.getStockSymbol());
 
     assertNotNull(buyOrders);
     assertNotNull(sellOrders);
