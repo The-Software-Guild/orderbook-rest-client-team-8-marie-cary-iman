@@ -36,13 +36,13 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public List<Order> getSellOrders(String stockSymbol) {
-    final String SELECT_SELL_ORDERS = String.format("SELECT * FROM ordertable WHERE stockSymbol = ? AND orderType = 'sell' AND (orderStatus = 'new' OR orderStatus = 'partial') ORDER BY price ASC, orderTime DESC", stockSymbol);
+    final String SELECT_SELL_ORDERS = String.format("SELECT * FROM ordertable WHERE stockSymbol = %s AND orderType = 'sell' AND (orderStatus = 'new' OR orderStatus = 'partial') ORDER BY price ASC, orderTime DESC", stockSymbol);
     return jdbc.query(SELECT_SELL_ORDERS, new OrderMapper());
   }
 
   @Override
   public List<Order> getBuyOrders(String stockSymbol) {
-    final String SELECT_BUY_ORDERS = String.format("SELECT * FROM ordertable WHERE stockSymbol = ? AND orderType = 'buy' AND (orderStatus = 'new' OR orderStatus = 'partial') ORDER BY price DESC, orderTime DESC", stockSymbol);
+    final String SELECT_BUY_ORDERS = String.format("SELECT * FROM ordertable WHERE stockSymbol = %s AND orderType = 'buy' AND (orderStatus = 'new' OR orderStatus = 'partial') ORDER BY price DESC, orderTime DESC", stockSymbol);
     return jdbc.query(SELECT_BUY_ORDERS, new OrderMapper());
   }
 
@@ -74,7 +74,8 @@ public class OrderBookDaoDB implements OrderBookDao {
     final String INSERT_ORDER = "INSERT INTO ordertable(clientId, orderType, orderStatus, stockSymbol, cumulativeQuantity, price) VALUES(?,?,?,?,?,?)";
 
     GeneratedKeyHolder keyHolder = new GeneratedKeyHolder();
-
+    // set orderStatus to 'new' ?
+    newOrder.setOrderStatus("new");
     jdbc.update((Connection conn) -> {
 
       PreparedStatement statement = conn.prepareStatement(
