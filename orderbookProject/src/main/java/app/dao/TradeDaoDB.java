@@ -2,6 +2,7 @@ package app.dao;
 
 import app.dto.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -50,6 +51,16 @@ public class TradeDaoDB implements TradeDao{
 
         newTrade.setTradeId(keyholder.getKey().intValue());
         return newTrade;
+    }
+
+    @Override
+    public Trade getTradeById(int tradeId) {
+        try{
+            final String SELECT_CLIENT_BY_ID = "SELECT * FROM client WHERE clientId = ?";
+            return jdbc.queryForObject(SELECT_CLIENT_BY_ID, new TradeMapper(), tradeId);
+        } catch (DataAccessException ex) {
+            return null;
+        }
     }
 
     @Override
