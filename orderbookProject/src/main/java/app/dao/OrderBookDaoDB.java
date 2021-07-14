@@ -13,12 +13,12 @@ import java.sql.*;
 import java.util.List;
 
 @Repository
-public class OrderDaoDB implements OrderDao {
+public class OrderBookDaoDB implements OrderBookDao {
 
   private final JdbcTemplate jdbc;
 
   @Autowired
-  public OrderDaoDB(JdbcTemplate jdbcTemplate) {
+  public OrderBookDaoDB(JdbcTemplate jdbcTemplate) {
     this.jdbc = jdbcTemplate;
   }
 

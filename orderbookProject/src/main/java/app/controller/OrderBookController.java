@@ -1,21 +1,18 @@
 package app.controller;
 
-import app.dao.OrderDao;
+import app.dao.OrderBookDao;
 import app.dto.Order;
-import app.dto.Trade;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
 @RequestMapping("orderbook")
 public class OrderBookController {
-  private final OrderDao dao;
+  private final OrderBookDao dao;
 
-  public OrderBookController(OrderDao dao) {
+  public OrderBookController(OrderBookDao dao) {
     this.dao = dao;
   }
 

@@ -2,7 +2,7 @@ package app.serviceLayer;
 
 
 
-import app.dao.OrderDaoDB;
+import app.dao.OrderBookDaoDB;
 import app.dto.Order;
 import app.dto.Trade;
 
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc = new JdbcTemplate();
-    OrderDaoDB daoDB = new OrderDaoDB(jdbc);
+    OrderBookDaoDB daoDB = new OrderBookDaoDB(jdbc);
 
 
 

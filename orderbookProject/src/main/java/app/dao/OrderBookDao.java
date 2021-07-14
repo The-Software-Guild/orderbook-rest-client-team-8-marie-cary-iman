@@ -4,7 +4,7 @@ import app.dto.Order;
 
 import java.util.List;
 
-public interface OrderDao {
+public interface OrderBookDao {
   List<Order> getAllOrders();
   List<Order> getSellOrders();
   List<Order> getBuyOrders();
