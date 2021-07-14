@@ -72,16 +72,16 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             Order pairedOrder = checkValidOrder(newOrder);
 
             if (pairedOrder != newOrder){
-                executeValidOrder();
+                createTrade(newOrder, pairedOrder);
             }
+
+            return newOrder;
 
         } else if (orderExists)
             throw new UnexpectedOrderStateError("This order already exists and thus cannot be created again");
         else {
             throw new UnexpectedClientStateError("This client does not exist, aborted order creation");
         }
-
-        return null;
     }
 
     @Override
@@ -92,8 +92,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
-    @Override
-    public Order checkValidOrder(Order order) {
+
+    private Order checkValidOrder(Order order) {
         System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
@@ -115,45 +115,60 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         return order;
     }
 
-    @Override
-    public void executeValidOrder(Order sellOrder,Order buyOrder) {
-        // need more verification and foolproof if statement
-        int buyQuantity = buyOrder.getCumulativeQuantity();
-        int sellQuantity = sellOrder.getCumulativeQuantity();
-        int soldQuantity = Math.abs(buyQuantity - sellQuantity);
-        if(buyQuantity > sellQuantity){
-            createTrade(buyOrder, sellOrder, soldQuantity);
-            buyOrder.setOrderStatus("partial");
-            buyOrder.setCumulativeQuantity(sellQuantity - buyQuantity);
-            sellOrder.setCumulativeQuantity(0);
-            sellOrder.setOrderStatus("completed");
-        }else if(buyQuantity < sellQuantity){
-            createTrade(buyOrder, sellOrder, soldQuantity);
-            buyOrder.setOrderStatus("completed");
-            buyOrder.setCumulativeQuantity(0);
-            sellOrder.setCumulativeQuantity(buyQuantity - sellQuantity);
-            sellOrder.setOrderStatus("partial");
+    /**
+     * Takes two orders in as arguments who are matched to have a maximal commission.
+     * Adjusts the quantity of stock left in each order post trade.
+     *
+     * @param firstOrder the first order in the trade
+     * @param secondOrder the second order matched with the trade
+     */
+    private int executeTrade(Order firstOrder, Order secondOrder) {
+        int firstOrderQty = firstOrder.getCumulativeQuantity();
+        int secondOrderQty = secondOrder.getCumulativeQuantity();
+
+        if(firstOrderQty > secondOrderQty){
+            firstOrder.setOrderStatus("partial");
+            firstOrder.setCumulativeQuantity(firstOrderQty - secondOrderQty);
+            secondOrder.setCumulativeQuantity(0);
+            secondOrder.setOrderStatus("completed");
+        }else if(firstOrderQty < secondOrderQty){
+            firstOrder.setOrderStatus("completed");
+            firstOrder.setCumulativeQuantity(0);
+            secondOrder.setCumulativeQuantity(secondOrderQty - firstOrderQty);
+            secondOrder.setOrderStatus("partial");
         }else{
-            createTrade(buyOrder, sellOrder, soldQuantity);
-            buyOrder.setOrderStatus("completed");
-            buyOrder.setCumulativeQuantity(0);
-            sellOrder.setOrderStatus("completed");
-            sellOrder.setCumulativeQuantity(0);
+            firstOrder.setOrderStatus("completed");
+            firstOrder.setCumulativeQuantity(0);
+            secondOrder.setOrderStatus("completed");
+            secondOrder.setCumulativeQuantity(0);
         }
 
+        return Math.abs(firstOrderQty - secondOrderQty);
     }
 
-    @Override
-    public Trade createTrade(Order buyOrder, Order sellOrder, int soldQuantity) {
+    private void createTrade(Order createdOrder, Order existingOrder) {
+
         Trade trade = new Trade();
-        //auto increment needed
-        trade.setBuyerId(buyOrder.getClientId());
+
+        if (createdOrder.getOrderType().contains("sell")){
+            trade.setSellerId(createdOrder.getClientId());
+            trade.setSellerPrice(createdOrder.getPrice());
+            trade.setBuyerId(existingOrder.getClientId());
+            trade.setBuyerPrice(existingOrder.getPrice());
+        } else {
+            trade.setSellerId(existingOrder.getClientId());
+            trade.setSellerPrice(existingOrder.getPrice());
+            trade.setBuyerId(createdOrder.getClientId());
+            trade.setBuyerPrice(createdOrder.getPrice());
+        }
+
+        // Sets the quantity traded to the return of the trade execution
+        trade.setQuantityFilled(executeTrade(createdOrder, existingOrder));
+
         //Date type
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         trade.setExecutionTime(timestamp);
-        trade.setBuyerPrice(buyOrder.getPrice());
-        trade.setSellerId(sellOrder.getClientId());
-        trade.setSellerPrice(sellOrder.getPrice());
-        return tradeDao.addTrade(trade);
+
+        tradeDao.addTrade(trade);
     }
 }

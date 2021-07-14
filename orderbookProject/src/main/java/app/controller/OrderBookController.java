@@ -65,7 +65,6 @@ public class OrderBookController {
         return String.format("%s %s", status, e.getMessage());
       }
     }
-
     return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
 
