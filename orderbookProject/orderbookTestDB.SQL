@@ -31,6 +31,3 @@ CREATE TABLE trade(
   CONSTRAINT fk_buyer_id FOREIGN KEY (buyerId) REFERENCES `client`(clientId),
   CONSTRAINT fk_seller_id FOREIGN KEY (sellerId) REFERENCES `client`(clientId)
 );
-
-INSERT INTO client (name) VALUES ("Pied Piper");
-INSERT INTO client (name) VALUES ("Hooli");
