@@ -34,6 +34,11 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     @Autowired
     TradeDao tradeDao;
+    OrderBookServiceLayerImpl(OrderBookDao orderDao, ClientDao clientDao,TradeDao tradeDao){
+        this.clientDao=clientDao;
+        this.tradeDao = tradeDao;
+        this.orderDao = orderDao;
+    }
 
     private boolean existingClient(int clientId){
         List<Client> allClients = clientDao.getAllClients();
@@ -103,24 +108,25 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     }
     @Override
     public Order checkValidOrder(Order order) {
+        Order orderChoice = new Order();
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
-                    order = order1;
+                if(order1.getPrice().compareTo(order.getPrice()) == 1 ){
+                    orderChoice = order1;
                     break;
                 }
             }
         } else {
             List<Order> orders = orderDao.getSellOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == 1){
-                    order = order1;
+                if(order1.getPrice().compareTo(order.getPrice()) == -1){
+                    orderChoice = order1;
                     break;
                 }
             }
         }
-        return order;
+        return orderChoice;
     }
 
     /**

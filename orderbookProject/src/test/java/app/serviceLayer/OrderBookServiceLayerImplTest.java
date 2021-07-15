@@ -10,8 +10,10 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
@@ -19,6 +21,7 @@ import java.util.List;
 
 
 @RunWith(SpringRunner.class)
+
 @SpringBootTest(classes = TestApplicationConfiguration.class)
 
 public class OrderBookServiceLayerImplTest extends TestCase {
@@ -35,19 +38,20 @@ public class OrderBookServiceLayerImplTest extends TestCase {
     @Before
     public void setup(){
 
-            List<Order> orders = orderDao.getAllOrders();
-            for (Order order : orders) {
-                orderDao.deleteOrderById(order.getOrderId());
-            }
-
+        List<Trade> trades = tradeDao.getAllTrades();
+        List<Order> orders = orderDao.getAllOrders();
         List<Client> clients = clientDao.getAllClients();
 
+        for (Trade trade: trades) {
+            tradeDao.deleteTrade(trade.getTradeId());
+        }
+        for (Order order : orders) {
+            orderDao.deleteOrderById(order.getOrderId());
+        }
         for (Client client: clients) {
             clientDao.deleteClientById(client.getClientId());
         }
-
-            serviceLayer = new OrderBookServiceLayerImpl();
-
+            serviceLayer = new OrderBookServiceLayerImpl(orderDao,clientDao,tradeDao);
 
     }
     @Test
@@ -60,7 +64,6 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         secondClient.setName("Hooli");
         secondClient = clientDao.addClient(secondClient);
         Order buyOrder1 = new Order();
-
         buyOrder1.setClientId(firstClient.getClientId());
         buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
@@ -88,6 +91,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
         sellOrder.setPrice(new BigDecimal("19.80"));
+        orderDao.addOrder(sellOrder);
 
 
         Order coupledOrder = serviceLayer.checkValidOrder(sellOrder);
