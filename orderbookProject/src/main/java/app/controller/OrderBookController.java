@@ -1,10 +1,13 @@
 package app.controller;
 
+
 import app.dto.Order;
 import app.serviceLayer.OrderBookServiceLayer;
 import app.serviceLayer.UnexpectedClientStateError;
 import app.serviceLayer.UnexpectedOrderStateError;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import app.dto.Trade;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,7 @@ public class OrderBookController {
   @PostMapping("/logon")
   @ResponseStatus(HttpStatus.CREATED)
   /* Create order with status "Begin". Return 201 CREATED as well as OrderId */
+
   public String create(@RequestBody Order order) throws UnexpectedClientStateError, UnexpectedOrderStateError {
     try{
       order.setOrderStatus("begin");
@@ -48,7 +52,6 @@ public class OrderBookController {
   verify IDs are valid and order is able to be updated (Begin, New, or Partial), then update order. Returns the OrderId and order status on success
   and order id with error message on failure.
    */
-  // TODO: Custom message
   public String update(@PathVariable int orderId, @RequestBody Order order){
     String status = "404";
     String message;
@@ -97,15 +100,17 @@ public class OrderBookController {
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
-  public List<Order> getByClientId(@PathVariable int clientId) throws UnexpectedClientStateError {
+  public List<Order> getByClientId(@PathVariable int clientId) {
     return service.getOrdersByClientId(clientId);
+
   }
 
-/*
   @GetMapping("trades/{orderId}")
   //returns each trade of a specified order based on id
-  public List<Order> getTradesByOrderId(@PathVariable int id){
-    List<Trade> trades = dao.geTradesByOrderId;
-  }*/
+  public List<Trade> getTradesByOrderId(@PathVariable int id){
+    List<Trade> trades = service.getTradesByOrderId(id);
+    return trades;
+  }
+
 
 }

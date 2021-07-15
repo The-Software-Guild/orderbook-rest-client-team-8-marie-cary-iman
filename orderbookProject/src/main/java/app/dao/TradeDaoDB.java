@@ -1,5 +1,6 @@
 package app.dao;
 
+import app.dto.Order;
 import app.dto.Trade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -9,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.sql.*;
 import java.util.List;
 
@@ -16,10 +18,12 @@ import java.util.List;
 public class TradeDaoDB implements TradeDao{
 
     private final JdbcTemplate jdbc;
+    private OrderBookDao orderDao;
 
     @Autowired
-    public TradeDaoDB(JdbcTemplate jdbcTemplate) {
+    public TradeDaoDB(JdbcTemplate jdbcTemplate, OrderBookDao orderDao) {
         this.jdbc = jdbcTemplate;
+        this.orderDao = orderDao;
     }
 
     @Override
@@ -66,6 +70,18 @@ public class TradeDaoDB implements TradeDao{
     public boolean deleteTrade(int tradeId) {
         final String DELETE_TRADE = "DELETE FROM trade WHERE tradeId = ?";
         return jdbc.update(DELETE_TRADE, tradeId) > 0;
+    }
+
+    @Override
+    public List<Trade> getTradesByOrderId(int orderId) {
+        String SELECT_TRADES_BY_ORDERID = "";
+        Order order = orderDao.getOrder(orderId);
+        if (order.getOrderType().equals("buy")) {
+            SELECT_TRADES_BY_ORDERID = String.format("SELECT * FROM trade WHERE buyerId = %s AND buyerPrice = %s", order.getClientId(), order.getPrice().setScale(10, RoundingMode.HALF_UP));
+        } else {
+            SELECT_TRADES_BY_ORDERID = String.format("SELECT * FROM trade WHERE sellerId = %s AND sellerPrice = %s", order.getClientId(), order.getPrice().setScale(10, RoundingMode.HALF_UP));
+        }
+        return jdbc.query(SELECT_TRADES_BY_ORDERID, new TradeMapper());
     }
 
     private static final class TradeMapper implements RowMapper<Trade> {

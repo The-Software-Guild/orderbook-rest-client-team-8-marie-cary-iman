@@ -11,7 +11,9 @@ public interface OrderBookServiceLayer {
 
     List<Order> getAllOrders();
     List<Order> getCurrentOrders();
-    List<Order> getOrdersByClientId(int clientId) throws UnexpectedClientStateError;
+    List<Order> getOrdersByClientId(int clientId);
+
+    List<Trade> getTradesByOrderId(int orderId);
 
     Order addOrder(Order order) throws UnexpectedOrderStateError, UnexpectedClientStateError;
 

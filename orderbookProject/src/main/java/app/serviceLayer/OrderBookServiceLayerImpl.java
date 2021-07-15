@@ -87,14 +87,22 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     @Override
     public boolean updateOrder(Order order) throws UnexpectedOrderStateError {
-        if (existingOrder(order))
-            return orderDao.updateOrder(order);
+        boolean orderUpdated;
+
+        if (existingOrder(order)) {
+            orderUpdated = orderDao.updateOrder(order);
+            Order toMatch = orderDao.getOrder(order.getOrderId());
+            Order matched = checkValidOrder(toMatch);
+            if (toMatch != matched) {
+                createTrade(toMatch, matched);
+            }
+            return orderUpdated;
+        }
         else
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
     private Order checkValidOrder(Order order) {
-        System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
@@ -191,4 +199,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         return orderDao.getOrdersByClientId(clientId);
     }
 
+    @Override
+    public List<Trade> getTradesByOrderId(int orderId) {
+        return tradeDao.getTradesByOrderId(orderId);
+    }
 }
