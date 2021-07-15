@@ -19,11 +19,11 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     @Override
     public Order checkValidOrder(Order order) {
+        // TODO: orders must not be completed/canceled
         System.out.println("Compare New order to order Table");
         if (order.getOrderType().equals("Sell")) {
             List<Order> orders = daoDB.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-
                 if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
                     order = order1;
                     break;
@@ -66,7 +66,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             sellOrder.setOrderStatus("completed");
             sellOrder.setCumulativeQuantity(0);
         }
-
     }
 
     @Override

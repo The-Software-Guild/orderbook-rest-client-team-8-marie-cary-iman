@@ -4,6 +4,7 @@ import app.dao.OrderBookDao;
 import app.dao.TradeDao;
 import app.dto.Order;
 import app.dto.Trade;
+import app.serviceLayer.OrderBookServiceLayer;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,11 +15,12 @@ import java.util.List;
 public class OrderBookController {
   private final OrderBookDao orderDao;
   private final TradeDao tradeDao;
+  private final OrderBookServiceLayer service;
 
-
-  public OrderBookController(OrderBookDao orderDao, TradeDao tradeDao) {
+  public OrderBookController(OrderBookDao orderDao, TradeDao tradeDao, OrderBookServiceLayer service) {
     this.orderDao = orderDao;
     this.tradeDao = tradeDao;
+    this.service = service;
   }
 
   /**
@@ -39,7 +41,14 @@ public class OrderBookController {
   public String create(@RequestBody Order order){
     order.setOrderStatus("begin");
     orderDao.addOrder(order);
-    System.out.println(order.getOrderStatus());
+    Order matchedOrder = service.checkValidOrder(order);
+    if(matchedOrder != order) {
+      if(order.getOrderType().equals("sell")){
+        service.executeValidOrder(order, matchedOrder);
+      } else if(order.getOrderType().equals("buy")) {
+        service.executeValidOrder(matchedOrder, order);
+      }
+    }
     return String.format("201 CREATED. OrderId: %d",order.getOrderId());
   }
 
@@ -48,16 +57,27 @@ public class OrderBookController {
   verify IDs are valid and order is able to be updated (Begin, New, or Partial), then update order. Returns the OrderId and order status on success
   and order id with error message on failure.
    */
-  // TODO: Custom message
   public String update(@PathVariable int orderId, @RequestBody Order order){
     String status = "404";
     String message = "";
     if(orderId != order.getOrderId()) {
       status = "404";
-      message = "ERROR MESSAGE"; //TODO informative message
+      message = "Path variable does not match orderId in body!"; //TODO informative message
+    } else if (orderDao.getOrder(orderId) == null) {
+      status  = "404";
+      message = "ORDER ID NOT FOUND IN DATABASE";
     } else if(orderDao.updateOrder(order)) {
       status = "202";
       message = "UPDATE SUCCESS";
+     // try matching orders after update
+      Order matchedOrder = service.checkValidOrder(order);
+      if(matchedOrder != order) {
+        if(order.getOrderType().equals("sell")){
+          service.executeValidOrder(order, matchedOrder);
+        } else if(order.getOrderType().equals("buy")) {
+          service.executeValidOrder(matchedOrder, order);
+        }
+      }
     }
     return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
@@ -68,13 +88,17 @@ public class OrderBookController {
    */
   public String cancel(@PathVariable int orderId) {
     String status;
-    String message;
+    String message = "";
     if(orderDao.cancelOrder(orderId)){
       status = "201";
       message = "ORDER CANCELED";
     } else {
       status = "404";
-      message = "SOME INFORMATIVE MESSAGE"; //TODO: reason for 404
+      if(orderDao.getOrder(orderId).getOrderStatus().equals("canceled")) {
+        message = "ORDER HAS ALREADY BEEN CANCELED";
+      } else if (orderDao.getOrder(orderId).getOrderStatus().equals("completed")) {
+        message = "ORDER HAS ALREADY BEEN COMPLETED";
+      }
     }
     return String.format("%s %s. OrderId: %d",status, message, orderId);
   }
