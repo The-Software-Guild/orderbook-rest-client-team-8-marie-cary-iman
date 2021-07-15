@@ -23,19 +23,18 @@ import java.util.List;
 
 public class OrderBookServiceLayerImplTest extends TestCase {
 
-    @Autowired
-    OrderBookDao orderDao;
 
     @Autowired
-    TradeDao tradeDao;
+    OrderBookServiceLayer serviceLayer;
 
     @Autowired
     ClientDao clientDao;
 
     @Autowired
-    OrderBookServiceLayer serviceLayer;
+    OrderBookDao orderDao;
 
-
+    @Autowired
+    TradeDao tradeDao;
 
     @Before
     public void setup(){
@@ -48,6 +47,8 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         for (Client client: clients) {
             clientDao.deleteClientById(client.getClientId());
         }
+
+        serviceLayer = new OrderBookServiceLayerImpl();
     }
 
     @Test
@@ -125,7 +126,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setCumulativeQuantity(25);
         sellOrder.setPrice(new BigDecimal("19.80"));
 
-        serviceLayer.executeValidOrder(sellOrder,buyOrder1);
+        serviceLayer.executeTrade(sellOrder,buyOrder1);
         assertSame("partial", buyOrder1.getOrderStatus());
 
         assertEquals("completed",sellOrder.getOrderStatus());
@@ -159,11 +160,12 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
         sellOrder.setPrice(new BigDecimal("19.80"));
+        orderDao.addOrder(sellOrder);
 
 
         Trade trade = serviceLayer.createTrade(buyOrder1,sellOrder);
+
+        System.out.println(trade.getStockSymbol());
         assertNotNull(trade.getTradeId());
-
-
     }
 }

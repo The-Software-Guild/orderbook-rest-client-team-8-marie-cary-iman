@@ -8,9 +8,7 @@ import app.dto.Order;
 import app.dto.Trade;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-
 
 import java.sql.Timestamp;
 
@@ -101,7 +99,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == 1 ){
+                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
                     order = order1;
                     break;
                 }
@@ -109,7 +107,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         } else {
             List<Order> orders = orderDao.getSellOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == -1){
+                if(order1.getPrice().compareTo(order.getPrice()) == 1){
                     order = order1;
                     break;
                 }
@@ -125,6 +123,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
      * @param firstOrder the first order in the trade
      * @param secondOrder the second order matched with the trade
      */
+
+    @Override
     public int executeTrade(Order firstOrder, Order secondOrder) {
         int firstOrderQty = firstOrder.getCumulativeQuantity();
         int secondOrderQty = secondOrder.getCumulativeQuantity();
@@ -150,7 +150,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         }
     }
 
-    public void createTrade(Order createdOrder, Order existingOrder) {
+    @Override
+    public Trade createTrade(Order createdOrder, Order existingOrder) {
 
         Trade trade = new Trade();
 
@@ -173,7 +174,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         trade.setExecutionTime(timestamp);
 
-        tradeDao.addTrade(trade);
+        trade = tradeDao.addTrade(trade);
+        return trade;
     }
 
     @Override
