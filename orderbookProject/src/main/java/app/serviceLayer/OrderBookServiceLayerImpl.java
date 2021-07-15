@@ -70,7 +70,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
         if (!orderExists && clientExists){
             Order newOrder = orderDao.addOrder(order);
-            Order pairedOrder = checkValidOrder(newOrder);
+            Order pairedOrder = checkValidOrderPair(newOrder);
 
             if (pairedOrder != newOrder){
                 createTrade(newOrder, pairedOrder);
@@ -92,7 +92,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         if (existingOrder(order)) {
             orderUpdated = orderDao.updateOrder(order);
             Order toMatch = orderDao.getOrder(order.getOrderId());
-            Order matched = checkValidOrder(toMatch);
+            Order matched = checkValidOrderPair(toMatch);
             if (toMatch != matched) {
                 createTrade(toMatch, matched);
             }
@@ -102,7 +102,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
-    private Order checkValidOrder(Order order) {
+    public Order checkValidOrderPair(Order order) {
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
@@ -130,7 +130,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
      * @param firstOrder the first order in the trade
      * @param secondOrder the second order matched with the trade
      */
-    private int executeTrade(Order firstOrder, Order secondOrder) {
+    public int executeTrade(Order firstOrder, Order secondOrder) {
         int firstOrderQty = firstOrder.getCumulativeQuantity();
         int secondOrderQty = secondOrder.getCumulativeQuantity();
 
@@ -139,19 +139,20 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             firstOrder.setCumulativeQuantity(firstOrderQty - secondOrderQty);
             secondOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
+            return secondOrderQty;
         }else if(firstOrderQty < secondOrderQty){
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setCumulativeQuantity(secondOrderQty - firstOrderQty);
             secondOrder.setOrderStatus("partial");
+            return firstOrderQty;
         }else{
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
             secondOrder.setCumulativeQuantity(0);
+            return firstOrderQty;
         }
-
-        return Math.abs(firstOrderQty - secondOrderQty);
     }
 
     private void createTrade(Order createdOrder, Order existingOrder) {

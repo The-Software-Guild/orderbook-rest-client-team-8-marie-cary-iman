@@ -20,4 +20,6 @@ public interface OrderBookServiceLayer {
     boolean updateOrder(Order order) throws UnexpectedOrderStateError;
 
     boolean cancelOrder(int order) throws UnexpectedOrderStateError;
+
+    Order checkValidOrderPair(Order order);
 }
