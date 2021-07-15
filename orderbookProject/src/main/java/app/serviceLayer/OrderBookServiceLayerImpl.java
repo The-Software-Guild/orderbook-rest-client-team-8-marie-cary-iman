@@ -5,11 +5,12 @@ import app.dto.Order;
 import app.dto.Trade;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 
 import java.util.List;
-
+@Repository
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     private JdbcTemplate jdbc = new JdbcTemplate();
     OrderBookDaoDB daoDB;
@@ -21,10 +22,10 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     public Order checkValidOrder(Order order) {
         // TODO: orders must not be completed/canceled
         System.out.println("Compare New order to order Table");
-        if (order.getOrderType().equals("Sell")) {
+        if (order.getOrderType().equals("sell")) {
             List<Order> orders = daoDB.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
+                if(order1.getPrice().compareTo(order.getPrice()) == 1 ){
                     order = order1;
                     break;
                 }
@@ -32,7 +33,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         } else {
             List<Order> orders = daoDB.getSellOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == 1){
+                if(order1.getPrice().compareTo(order.getPrice()) == -1){
                     order = order1;
                     break;
                 }

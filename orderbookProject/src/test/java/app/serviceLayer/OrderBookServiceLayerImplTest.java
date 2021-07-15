@@ -2,7 +2,11 @@ package app.serviceLayer;
 
 import app.TestApplicationConfiguration;
 
+import app.dao.ClientDao;
+import app.dao.ClientDaoDB;
 import app.dao.OrderBookDaoDB;
+import app.dao.TradeDao;
+import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
 import junit.framework.TestCase;
@@ -11,9 +15,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import java.math.BigDecimal;
 import java.util.List;
+
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = TestApplicationConfiguration.class)
@@ -22,7 +28,11 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
     @Autowired
     OrderBookDaoDB orderDao;
+    @Autowired
     OrderBookServiceLayerImpl serviceLayer;
+
+    @Autowired
+    ClientDao clientDao;
     @Before
     public void setup(){
 
@@ -30,15 +40,29 @@ public class OrderBookServiceLayerImplTest extends TestCase {
             for (Order order : orders) {
                 orderDao.deleteOrderById(order.getOrderId());
             }
+
+        List<Client> clients = clientDao.getAllClients();
+
+        for (Client client: clients) {
+            clientDao.deleteClientById(client.getClientId());
+        }
+
             serviceLayer = new OrderBookServiceLayerImpl(orderDao);
+
 
     }
     @Test
     public void testCheckValidOrder() {
+        Client firstClient = new Client();
+        firstClient.setName("Pied Piper");
+        firstClient = clientDao.addClient(firstClient);
 
+        Client secondClient = new Client();
+        secondClient.setName("Hooli");
+        secondClient = clientDao.addClient(secondClient);
         Order buyOrder1 = new Order();
 
-        buyOrder1.setClientId(1);
+        buyOrder1.setClientId(firstClient.getClientId());
         buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
@@ -47,7 +71,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         orderDao.addOrder(buyOrder1);
 
         Order buyOrder2 = new Order();
-        buyOrder2.setClientId(1);
+        buyOrder2.setClientId(firstClient.getClientId());
         buyOrder2.setOrderType("buy");
         buyOrder2.setOrderStatus("New");
         buyOrder2.setStockSymbol("TSLA");
@@ -59,7 +83,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         assertEquals(2,buyList.size());
 
         Order sellOrder = new Order();
-        sellOrder.setClientId(2);
+        sellOrder.setClientId(secondClient.getClientId());
         sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
@@ -75,9 +99,16 @@ public class OrderBookServiceLayerImplTest extends TestCase {
     }
     @Test
     public void testExecuteValidOrder() {
+        Client firstClient = new Client();
+        firstClient.setName("Pied Piper");
+        firstClient = clientDao.addClient(firstClient);
+
+        Client secondClient = new Client();
+        secondClient.setName("Hooli");
+        secondClient = clientDao.addClient(secondClient);
         Order buyOrder1 = new Order();
 
-        buyOrder1.setClientId(1);
+        buyOrder1.setClientId(firstClient.getClientId());
         buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
@@ -87,7 +118,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
 
         Order sellOrder = new Order();
-        sellOrder.setClientId(2);
+        sellOrder.setClientId(secondClient.getClientId());
         sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
@@ -103,9 +134,16 @@ public class OrderBookServiceLayerImplTest extends TestCase {
     }
     @Test
     public void testCreateTrade() {
+        Client firstClient = new Client();
+        firstClient.setName("Pied Piper");
+        firstClient = clientDao.addClient(firstClient);
+
+        Client secondClient = new Client();
+        secondClient.setName("Hooli");
+        secondClient = clientDao.addClient(secondClient);
         Order buyOrder1 = new Order();
 
-        buyOrder1.setClientId(1);
+        buyOrder1.setClientId(firstClient.getClientId());
         buyOrder1.setOrderType("buy");
         buyOrder1.setOrderStatus("New");
         buyOrder1.setStockSymbol("TSLA");
@@ -115,7 +153,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
 
 
         Order sellOrder = new Order();
-        sellOrder.setClientId(2);
+        sellOrder.setClientId(secondClient.getClientId());
         sellOrder.setOrderType("sell");
         sellOrder.setOrderStatus("New");
         sellOrder.setStockSymbol("TSLA");
