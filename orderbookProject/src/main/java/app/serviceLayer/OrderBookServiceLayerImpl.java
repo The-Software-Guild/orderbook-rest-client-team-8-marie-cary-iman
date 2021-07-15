@@ -157,7 +157,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             secondOrder.setOrderStatus("completed");
             secondOrder.setCumulativeQuantity(0);
         }
-
+        orderDao.updateOrder(firstOrder);
+        orderDao.updateOrder(secondOrder);
         return Math.abs(firstOrderQty - secondOrderQty);
     }
 
