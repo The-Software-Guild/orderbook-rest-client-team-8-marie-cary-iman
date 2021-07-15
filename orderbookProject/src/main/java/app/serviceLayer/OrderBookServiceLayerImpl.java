@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
-    private JdbcTemplate jdbc;
 
     @Autowired
     OrderBookDao orderDao;
@@ -35,10 +34,6 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
     @Autowired
     TradeDao tradeDao;
-
-    OrderBookServiceLayerImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbc = jdbcTemplate;
-    }
 
     private boolean existingClient(int clientId){
         List<Client> allClients = clientDao.getAllClients();

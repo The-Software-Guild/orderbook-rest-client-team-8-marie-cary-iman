@@ -4,7 +4,6 @@ import app.dto.Order;
 import app.serviceLayer.OrderBookServiceLayer;
 import app.serviceLayer.UnexpectedClientStateError;
 import app.serviceLayer.UnexpectedOrderStateError;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -107,10 +106,6 @@ public class OrderBookController {
   //returns each trade of a specified order based on id
   public List<Order> getTradesByOrderId(@PathVariable int id){
     List<Trade> trades = dao.geTradesByOrderId;
-  }
-
-  /* OPTIONAL
-  @GetMapping("/generate")
-   */
+  }*/
 
 }
