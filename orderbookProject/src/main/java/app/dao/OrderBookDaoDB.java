@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class OrderBookDaoDB implements OrderBookDao {
@@ -28,9 +29,8 @@ public class OrderBookDaoDB implements OrderBookDao {
     return jdbc.query(SELECT_ALL_ORDERS, new OrderMapper());
   }
 
-
   public List<Order> getAllOrders(String stockSymbol) {
-    final String SELECT_ALL_ORDERS_FOR_STOCK = String.format("SELECT * FROM odertable WHERE stockSymbol = '%s'", stockSymbol);
+    final String SELECT_ALL_ORDERS_FOR_STOCK = String.format("SELECT * FROM ordertable WHERE stockSymbol = %s", stockSymbol);
     return jdbc.query(SELECT_ALL_ORDERS_FOR_STOCK, new OrderMapper());
   }
 
@@ -63,7 +63,6 @@ public class OrderBookDaoDB implements OrderBookDao {
       final String SELECT_ORDER_BY_CLIENTID = String.format("SELECT * FROM ordertable WHERE clientId = %s ORDER BY orderTime", clientId);
       return jdbc.query(SELECT_ORDER_BY_CLIENTID, new OrderMapper());
     } catch (DataAccessException e) {
-      e.printStackTrace();
       return null;
     }
   }
