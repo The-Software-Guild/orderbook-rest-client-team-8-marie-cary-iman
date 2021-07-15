@@ -7,13 +7,20 @@ import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -183,4 +190,10 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             return orderDao.cancelOrder(orderId);
         }
     }
+
+    @Override
+    public List<Order> getOrdersByClientId(int clientId){
+        return orderDao.getOrdersByClientId(clientId);
+    }
+
 }

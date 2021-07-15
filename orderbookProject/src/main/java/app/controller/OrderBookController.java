@@ -4,6 +4,7 @@ import app.dto.Order;
 import app.serviceLayer.OrderBookServiceLayer;
 import app.serviceLayer.UnexpectedClientStateError;
 import app.serviceLayer.UnexpectedOrderStateError;
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -97,9 +98,8 @@ public class OrderBookController {
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
-  public List<Order> getByClientId(@PathVariable int clientId){
-    List<Order> orders = dao.getOrdersByClientId(clientId);
-    return orders;
+  public List<Order> getByClientId(@PathVariable int clientId) throws UnexpectedClientStateError {
+    return service.getOrdersByClientId(clientId);
   }
 
 /*
