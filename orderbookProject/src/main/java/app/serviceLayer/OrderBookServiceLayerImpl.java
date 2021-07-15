@@ -7,20 +7,12 @@ import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -102,7 +94,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
-    private Order checkValidOrder(Order order) {
+    @Override
+    public Order checkValidOrder(Order order) {
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
@@ -130,31 +123,38 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
      * @param firstOrder the first order in the trade
      * @param secondOrder the second order matched with the trade
      */
-    private int executeTrade(Order firstOrder, Order secondOrder) {
+
+    @Override
+    public int executeTrade(Order firstOrder, Order secondOrder) {
         int firstOrderQty = firstOrder.getCumulativeQuantity();
         int secondOrderQty = secondOrder.getCumulativeQuantity();
-
+        int quantityFilled = 0;
         if(firstOrderQty > secondOrderQty){
             firstOrder.setOrderStatus("partial");
             firstOrder.setCumulativeQuantity(firstOrderQty - secondOrderQty);
             secondOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
+            quantityFilled = secondOrderQty;
         }else if(firstOrderQty < secondOrderQty){
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setCumulativeQuantity(secondOrderQty - firstOrderQty);
             secondOrder.setOrderStatus("partial");
+            quantityFilled = firstOrderQty;
         }else{
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
             secondOrder.setCumulativeQuantity(0);
+            quantityFilled = firstOrderQty;
         }
-
-        return Math.abs(firstOrderQty - secondOrderQty);
+        orderDao.updateOrder(firstOrder);
+        orderDao.updateOrder(secondOrder);
+        return quantityFilled;
     }
 
-    private void createTrade(Order createdOrder, Order existingOrder) {
+    @Override
+    public Trade createTrade(Order createdOrder, Order existingOrder) {
 
         Trade trade = new Trade();
 
@@ -177,7 +177,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         trade.setExecutionTime(timestamp);
 
-        tradeDao.addTrade(trade);
+        trade = tradeDao.addTrade(trade);
+        return trade;
     }
 
     @Override

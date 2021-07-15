@@ -94,7 +94,10 @@ public class TradeDaoDB implements TradeDao{
             trade.setSellerId(rs.getInt("sellerId"));
             trade.setSellerPrice(rs.getBigDecimal("sellerPrice"));
             trade.setQuantityFilled(rs.getInt("quantityFilled"));
+            trade.setExecutionTime(rs.getTimestamp("executionTime"));
+            trade.setStockSymbol(rs.getString("stockSymbol"));
             return trade;
         }
     }
+
 }
