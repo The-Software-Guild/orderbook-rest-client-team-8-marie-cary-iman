@@ -188,7 +188,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
                 .collect(Collectors.toList());
 
         if (orderToBeCanceled.isEmpty()) {
-            throw new UnexpectedOrderStateError("This order is not in a state where it can be canceled.");
+            throw new UnexpectedOrderStateError("This order is not in a state where it can be canceled");
         } else {
             return orderDao.cancelOrder(orderId);
         }

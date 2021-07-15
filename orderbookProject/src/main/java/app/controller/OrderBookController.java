@@ -58,7 +58,7 @@ public class OrderBookController {
 
     if(orderId != order.getOrderId()) {
       status = "404";
-      message = "ERROR MESSAGE"; //TODO informative message
+      message = "Mismatching path variable with payload body";
     } else {
       try {
         service.updateOrder(order);
@@ -100,16 +100,14 @@ public class OrderBookController {
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
-  public List<Order> getByClientId(@PathVariable int clientId) {
+  public List<Order> getOrdersByClientId(@PathVariable int clientId) {
     return service.getOrdersByClientId(clientId);
-
   }
 
   @GetMapping("trades/{orderId}")
   //returns each trade of a specified order based on id
   public List<Trade> getTradesByOrderId(@PathVariable int id){
-    List<Trade> trades = service.getTradesByOrderId(id);
-    return trades;
+    return service.getTradesByOrderId(id);
   }
 
 
