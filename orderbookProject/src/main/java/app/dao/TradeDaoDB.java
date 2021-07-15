@@ -97,4 +97,5 @@ public class TradeDaoDB implements TradeDao{
             return trade;
         }
     }
+
 }

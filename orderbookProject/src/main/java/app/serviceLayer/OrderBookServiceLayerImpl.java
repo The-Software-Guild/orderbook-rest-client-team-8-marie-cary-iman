@@ -7,20 +7,14 @@ import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+
 import java.sql.Timestamp;
 
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +64,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
 
         if (!orderExists && clientExists){
             Order newOrder = orderDao.addOrder(order);
-            Order pairedOrder = checkValidOrderPair(newOrder);
+            Order pairedOrder = checkValidOrder(newOrder);
 
             if (pairedOrder != newOrder){
                 createTrade(newOrder, pairedOrder);
@@ -92,7 +86,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         if (existingOrder(order)) {
             orderUpdated = orderDao.updateOrder(order);
             Order toMatch = orderDao.getOrder(order.getOrderId());
-            Order matched = checkValidOrderPair(toMatch);
+            Order matched = checkValidOrder(toMatch);
             if (toMatch != matched) {
                 createTrade(toMatch, matched);
             }
@@ -102,11 +96,12 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
 
-    public Order checkValidOrderPair(Order order) {
+    @Override
+    public Order checkValidOrder(Order order) {
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == -1 ){
+                if(order1.getPrice().compareTo(order.getPrice()) == 1 ){
                     order = order1;
                     break;
                 }
@@ -114,7 +109,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         } else {
             List<Order> orders = orderDao.getSellOrders(order.getStockSymbol());
             for (Order order1 : orders) {
-                if(order1.getPrice().compareTo(order.getPrice()) == 1){
+                if(order1.getPrice().compareTo(order.getPrice()) == -1){
                     order = order1;
                     break;
                 }
