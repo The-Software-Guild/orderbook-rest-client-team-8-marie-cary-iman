@@ -131,6 +131,7 @@ public class OrderBookDaoDB implements OrderBookDao {
       order.setOrderStatus(rs.getString("orderStatus"));
       order.setCumulativeQuantity(rs.getInt("cumulativeQuantity"));
       order.setPrice(rs.getBigDecimal("price"));
+      order.setTimestamp(rs.getTimestamp("orderTime"));
       return order;
     }
   }
