@@ -98,8 +98,8 @@ public class OrderBookDaoDB implements OrderBookDao {
 
   @Override
   public boolean updateOrder(Order order) {
-    final String UPDATE_ORDER = "UPDATE ordertable SET cumulativeQuantity = ?, price = ? WHERE orderId = ?";
-    return jdbc.update(UPDATE_ORDER, order.getCumulativeQuantity(), order.getPrice(), order.getOrderId()) > 0;
+    final String UPDATE_ORDER = "UPDATE ordertable SET orderStatus = ?, cumulativeQuantity = ?, price = ? WHERE orderId = ?";
+    return jdbc.update(UPDATE_ORDER, order.getOrderStatus(), order.getCumulativeQuantity(), order.getPrice(), order.getOrderId()) > 0;
   }
 
   @Override

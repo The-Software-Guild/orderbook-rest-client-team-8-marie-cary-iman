@@ -128,26 +128,29 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
     public int executeTrade(Order firstOrder, Order secondOrder) {
         int firstOrderQty = firstOrder.getCumulativeQuantity();
         int secondOrderQty = secondOrder.getCumulativeQuantity();
-
+        int quantityFilled = 0;
         if(firstOrderQty > secondOrderQty){
             firstOrder.setOrderStatus("partial");
             firstOrder.setCumulativeQuantity(firstOrderQty - secondOrderQty);
             secondOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
-            return secondOrderQty;
+            quantityFilled = secondOrderQty;
         }else if(firstOrderQty < secondOrderQty){
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setCumulativeQuantity(secondOrderQty - firstOrderQty);
             secondOrder.setOrderStatus("partial");
-            return firstOrderQty;
+            quantityFilled = firstOrderQty;
         }else{
             firstOrder.setOrderStatus("completed");
             firstOrder.setCumulativeQuantity(0);
             secondOrder.setOrderStatus("completed");
             secondOrder.setCumulativeQuantity(0);
-            return firstOrderQty;
+            quantityFilled = firstOrderQty;
         }
+        orderDao.updateOrder(firstOrder);
+        orderDao.updateOrder(secondOrder);
+        return quantityFilled;
     }
 
     @Override
