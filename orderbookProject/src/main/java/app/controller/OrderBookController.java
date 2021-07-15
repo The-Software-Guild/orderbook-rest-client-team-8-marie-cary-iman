@@ -1,10 +1,13 @@
 package app.controller;
 
-import app.dao.OrderBookDao;
-import app.dao.TradeDao;
+
 import app.dto.Order;
-import app.dto.Trade;
 import app.serviceLayer.OrderBookServiceLayer;
+import app.serviceLayer.UnexpectedClientStateError;
+import app.serviceLayer.UnexpectedOrderStateError;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import app.dto.Trade;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,15 +16,9 @@ import java.util.List;
 @RestController
 @RequestMapping("orderbook")
 public class OrderBookController {
-  private final OrderBookDao orderDao;
-  private final TradeDao tradeDao;
-  private final OrderBookServiceLayer service;
 
-  public OrderBookController(OrderBookDao orderDao, TradeDao tradeDao, OrderBookServiceLayer service) {
-    this.orderDao = orderDao;
-    this.tradeDao = tradeDao;
-    this.service = service;
-  }
+  @Autowired
+  OrderBookServiceLayer service;
 
   /**
    * Mapped to GET requests at /api/current.
@@ -32,23 +29,21 @@ public class OrderBookController {
   @RequestMapping("/all")
   @GetMapping
   public List<Order> all() {
-    return orderDao.getCurrentOrders();
+    return service.getAllOrders();
   }
 
-  @PostMapping("/create")
+  @PostMapping("/logon")
   @ResponseStatus(HttpStatus.CREATED)
   /* Create order with status "Begin". Return 201 CREATED as well as OrderId */
-  public String create(@RequestBody Order order){
-    order.setOrderStatus("begin");
-    orderDao.addOrder(order);
-    Order matchedOrder = service.checkValidOrder(order);
-    if(matchedOrder != order) {
-      if(order.getOrderType().equals("sell")){
-        service.executeValidOrder(order, matchedOrder);
-      } else if(order.getOrderType().equals("buy")) {
-        service.executeValidOrder(matchedOrder, order);
-      }
+
+  public String create(@RequestBody Order order) throws UnexpectedClientStateError, UnexpectedOrderStateError {
+    try{
+      order.setOrderStatus("begin");
+      service.addOrder(order);
+    } catch (UnexpectedOrderStateError | UnexpectedClientStateError e) {
+      return String.format("404 ERROR: %s", e.getMessage());
     }
+
     return String.format("201 CREATED. OrderId: %d",order.getOrderId());
   }
 
@@ -59,24 +54,18 @@ public class OrderBookController {
    */
   public String update(@PathVariable int orderId, @RequestBody Order order){
     String status = "404";
-    String message = "";
+    String message;
+
     if(orderId != order.getOrderId()) {
       status = "404";
-      message = "Path variable does not match orderId in body!"; //TODO informative message
-    } else if (orderDao.getOrder(orderId) == null) {
-      status  = "404";
-      message = "ORDER ID NOT FOUND IN DATABASE";
-    } else if(orderDao.updateOrder(order)) {
-      status = "202";
-      message = "UPDATE SUCCESS";
-     // try matching orders after update
-      Order matchedOrder = service.checkValidOrder(order);
-      if(matchedOrder != order) {
-        if(order.getOrderType().equals("sell")){
-          service.executeValidOrder(order, matchedOrder);
-        } else if(order.getOrderType().equals("buy")) {
-          service.executeValidOrder(matchedOrder, order);
-        }
+      message = "ERROR MESSAGE"; //TODO informative message
+    } else {
+      try {
+        service.updateOrder(order);
+        status = "202";
+        message = "UPDATE SUCCESS";
+      } catch (UnexpectedOrderStateError e) {
+        return String.format("%s %s", status, e.getMessage());
       }
     }
     return String.format("%s %s. OrderId: %d",status, message, orderId);
@@ -86,47 +75,42 @@ public class OrderBookController {
   /*attempts to cancel order by passing orderId. On success, returns the OrderId and updated order status. If the order was completed/canceled, return an error containing orderId, order status, and informative
   message
    */
-  public String cancel(@PathVariable int orderId) {
+  public String cancel(@PathVariable int orderId) throws UnexpectedOrderStateError {
     String status;
-    String message = "";
-    if(orderDao.cancelOrder(orderId)){
+    String message;
+
+    try {
+      service.cancelOrder(orderId);
       status = "201";
       message = "ORDER CANCELED";
-    } else {
+    } catch (UnexpectedOrderStateError e) {
       status = "404";
-      if(orderDao.getOrder(orderId).getOrderStatus().equals("canceled")) {
-        message = "ORDER HAS ALREADY BEEN CANCELED";
-      } else if (orderDao.getOrder(orderId).getOrderStatus().equals("completed")) {
-        message = "ORDER HAS ALREADY BEEN COMPLETED";
-      }
+      message = e.getMessage();
     }
-    return String.format("%s %s. OrderId: %d",status, message, orderId);
+
+    return String.format("%s %s. OrderId: %d", status, message, orderId);
   }
 
   @GetMapping("/current")
   /* return list of all active orders (NOT completed or canceled). This should include all info of each order
    */
   public List<Order> current(){
-    return orderDao.getCurrentOrders();
+    return service.getCurrentOrders();
   }
 
   @GetMapping("/orders/{clientId}")
   //return list of orders for specified client, sorted by time.
-  public List<Order> getByClientId(@PathVariable int clientId){
-    List<Order> orders = orderDao.getOrdersByClientId(clientId);
-    return orders;
-  }
+  public List<Order> getByClientId(@PathVariable int clientId) {
+    return service.getOrdersByClientId(clientId);
 
+  }
 
   @GetMapping("trades/{orderId}")
   //returns each trade of a specified order based on id
   public List<Trade> getTradesByOrderId(@PathVariable int id){
-    List<Trade> trades = tradeDao.getTradesByOrderId(id);
+    List<Trade> trades = service.getTradesByOrderId(id);
     return trades;
   }
 
-  /* OPTIONAL
-  @GetMapping("/generate")
-   */
 
 }
