@@ -2,10 +2,7 @@ package app.serviceLayer;
 
 import app.TestApplicationConfiguration;
 
-import app.dao.ClientDao;
-import app.dao.ClientDaoDB;
-import app.dao.OrderBookDaoDB;
-import app.dao.TradeDao;
+import app.dao.*;
 import app.dto.Client;
 import app.dto.Order;
 import app.dto.Trade;
@@ -27,12 +24,14 @@ import java.util.List;
 public class OrderBookServiceLayerImplTest extends TestCase {
 
     @Autowired
-    OrderBookDaoDB orderDao;
+    OrderBookDao orderDao;
     @Autowired
-    OrderBookServiceLayerImpl serviceLayer;
+    OrderBookServiceLayer serviceLayer;
 
     @Autowired
     ClientDao clientDao;
+    @Autowired
+    TradeDao tradeDao;
     @Before
     public void setup(){
 
@@ -47,7 +46,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
             clientDao.deleteClientById(client.getClientId());
         }
 
-            serviceLayer = new OrderBookServiceLayerImpl(orderDao);
+            serviceLayer = new OrderBookServiceLayerImpl();
 
 
     }
@@ -125,7 +124,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setCumulativeQuantity(25);
         sellOrder.setPrice(new BigDecimal("19.80"));
 
-        serviceLayer.executeValidOrder(sellOrder,buyOrder1);
+        serviceLayer.executeTrade(sellOrder,buyOrder1);
         assertSame("partial", buyOrder1.getOrderStatus());
 
         assertEquals("completed",sellOrder.getOrderStatus());
@@ -159,9 +158,11 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setStockSymbol("TSLA");
         sellOrder.setCumulativeQuantity(25);
         sellOrder.setPrice(new BigDecimal("19.80"));
+        orderDao.addOrder(sellOrder);
 
 
-        Trade trade = serviceLayer.createTrade(buyOrder1,sellOrder,25);
+        Trade trade = serviceLayer.createTrade(buyOrder1,sellOrder);
+        System.out.println(trade.getStockSymbol());
         assertNotNull(trade.getTradeId());
 
 

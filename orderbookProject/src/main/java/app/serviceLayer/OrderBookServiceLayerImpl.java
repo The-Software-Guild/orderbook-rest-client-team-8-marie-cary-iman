@@ -101,8 +101,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         else
             throw new UnexpectedOrderStateError("Order does not exist with that orderId, cannot update.");
     }
-
-    private Order checkValidOrder(Order order) {
+    @Override
+    public Order checkValidOrder(Order order) {
         if (order.getOrderType().equals("sell")) {
             List<Order> orders = orderDao.getBuyOrders(order.getStockSymbol());
             for (Order order1 : orders) {
@@ -130,7 +130,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
      * @param firstOrder the first order in the trade
      * @param secondOrder the second order matched with the trade
      */
-    private int executeTrade(Order firstOrder, Order secondOrder) {
+    @Override
+    public int executeTrade(Order firstOrder, Order secondOrder) {
         int firstOrderQty = firstOrder.getCumulativeQuantity();
         int secondOrderQty = secondOrder.getCumulativeQuantity();
 
@@ -154,7 +155,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         return Math.abs(firstOrderQty - secondOrderQty);
     }
 
-    private void createTrade(Order createdOrder, Order existingOrder) {
+    @Override
+    public Trade createTrade(Order createdOrder, Order existingOrder) {
 
         Trade trade = new Trade();
 
@@ -177,7 +179,8 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         trade.setExecutionTime(timestamp);
 
-        tradeDao.addTrade(trade);
+        trade = tradeDao.addTrade(trade);
+        return trade;
     }
 
     @Override
