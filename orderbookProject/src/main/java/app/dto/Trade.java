@@ -13,6 +13,18 @@ public class Trade {
   private BigDecimal sellerPrice;
   private Integer quantityFilled;
   private Date executionTime;
+  private String stockSymbol;
+
+
+  public String getStockSymbol() {
+    return stockSymbol;
+  }
+
+  public void setStockSymbol(String stockSymbol) {
+    this.stockSymbol = stockSymbol;
+  }
+
+
 
   public Integer getTradeId() {
     return tradeId;
