@@ -150,7 +150,7 @@ public class OrderBookServiceLayerImpl implements OrderBookServiceLayer{
         }
     }
 
-    private void createTrade(Order createdOrder, Order existingOrder) {
+    public void createTrade(Order createdOrder, Order existingOrder) {
 
         Trade trade = new Trade();
 

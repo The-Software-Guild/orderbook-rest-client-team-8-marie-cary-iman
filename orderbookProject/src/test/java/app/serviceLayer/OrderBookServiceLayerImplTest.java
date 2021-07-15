@@ -161,7 +161,7 @@ public class OrderBookServiceLayerImplTest extends TestCase {
         sellOrder.setPrice(new BigDecimal("19.80"));
 
 
-        Trade trade = serviceLayer.createTrade(buyOrder1,sellOrder,25);
+        Trade trade = serviceLayer.createTrade(buyOrder1,sellOrder);
         assertNotNull(trade.getTradeId());
 
 
